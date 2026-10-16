@@ -1,0 +1,35 @@
+{
+  "name": "prog2002-a3-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PROG2002 A3 Charity Events REST API - Node.js + Express.js + MySQL (team40)",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node tests/api.test.js",
+    "docs": "jsdoc -c jsdoc.json",
+    "docs:clean": "node -e \"require('fs').rmSync('docs',{recursive:true,force:true})\""
+  },
+  "keywords": [
+    "PROG2002",
+    "express",
+    "mysql",
+    "rest-api",
+    "charity-events"
+  ],
+  "author": "Yizheng Yuan (24833044), Mu Li (224832355)",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mysql2": "^3.15.3"
+  },
+  "devDependencies": {
+    "docdash": "^2.0.2",
+    "jsdoc": "^4.0.5"
+  }
+}
