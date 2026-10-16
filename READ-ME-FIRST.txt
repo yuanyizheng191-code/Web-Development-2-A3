@@ -1,0 +1,108 @@
+PROG2002 Web Development II - Assessment 3
+Team team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+============================================================
+
+HOW TO REASSEMBLE THIS PROJECT
+------------------------------
+The brief asks for three separate source archives. Extract all three into the
+SAME parent folder - each zip creates one top-level folder - to get the layout
+the build and test scripts expect:
+
+    <anywhere>\PROG2002-A3\
+        ng-client\        <- from 24833044A3-clientside.zip
+        ng-admin\         <- from 24833044A3-adminside.zip
+        prog2002-a3\      <- from 24833044A3-api.zip (this archive)
+
+    i.e. extract, then rename the three outer folders to ng-client,
+    ng-admin and prog2002-a3 if your unzip tool appended anything.
+
+QUICKEST WAY TO SEE IT RUNNING
+------------------------------
+1. Create the database (MySQL 8):
+
+       mysql -u root -p < prog2002-a3\api\sql\charityevents_db.sql
+
+   (or import that file through phpMyAdmin / MySQL Workbench)
+
+2. Start the API:
+
+       cd prog2002-a3\api
+       npm install
+       rem check the DB_CONFIG password in config/env.js (there is NO .env file)
+       npm start                   -> http://localhost:3000/api/health
+
+3. Start the client website:
+
+       cd ..\..\ng-client
+       npm install
+       npx ng serve --port 4200    -> http://localhost:4200
+
+4. Start the admin website:
+
+       cd ..\ng-admin
+       npm install
+       npx ng serve --port 4300    -> http://localhost:4300
+
+Angular v22 requires Node 22.22.3+ or 24.15+ (node -v to check).
+
+SIMPLER: ONE SERVER FOR EVERYTHING
+----------------------------------
+Both websites are already built into api\public, so a single command serves the
+API and both websites from one origin (this is also how cPanel is set up):
+
+       cd prog2002-a3\api
+       npm install
+       npm start            ->  client: http://localhost:3000/
+                                admin:  http://localhost:3000/admin/
+
+CONFIGURATION
+-------------
+There is no .env file and no dotenv package. The database connection is written
+as plain JavaScript in prog2002-a3\api\config\env.js (DB_CONFIG block) and
+mirrored in prog2002-a3\api\event_db.js, following the Assessment 2 approach.
+Edit that one block, not environment variables.
+
+NO MYSQL AVAILABLE?
+-------------------
+USE_DEMO_FALLBACK is true in config\env.js. The API then serves a bundled sample
+dataset in read-only mode so both websites still work, and prints a clear warning
+explaining that writes are disabled.
+
+VERIFY IT YOURSELF
+------------------
+    cd prog2002-a3\api
+    npm test                          # 96 automated API checks
+
+    rem The browser suite expects the combined deployment, which is the same
+    rem layout cPanel uses: one Express app serving the API, the client at /
+    rem and the admin at /admin. Copy the builds in first if you have not run
+    rem build_all.ps1 (each archive already ships its own dist\ folder):
+    rem   copy ng-client\dist\clientside\browser\*  prog2002-a3\api\public\client\
+    rem   copy ng-admin\dist\adminside\browser\*    prog2002-a3\api\public\admin\
+
+    cd prog2002-a3
+    node tools\ui-smoke-test.js       # 57 browser checks through real Chrome
+
+Each ng-client / ng-admin archive already contains its compiled dist\ folder as
+well as the source, so a production build is not required to deploy it. To
+rebuild everything and regenerate the three zips in one step:
+
+    cd prog2002-a3
+    PowerShell:  & .\tools\build_all.ps1 -Username 24833044
+
+DEPLOYMENT
+----------
+See prog2002-a3\DEPLOYMENT.md for the complete SCU cPanel walkthrough
+(database import, Node.js application registration, uploading both Angular
+builds, the .htaccess files and a verification checklist).
+
+DOCUMENTATION IN THIS ARCHIVE
+-----------------------------
+    api\README.md            every endpoint, request/response shapes, status codes
+    DEPLOYMENT.md            cPanel deployment guide
+    tools\ui-smoke-test.js   the browser test suite (read the header comments)
+    tools\preview-server.js  local static server with an /api proxy
+    tools\build_all.ps1      one-command production build + packaging
+
+The project report, the demonstration-video script and the peer evaluation forms
+are separate submission files, not part of these archives.
