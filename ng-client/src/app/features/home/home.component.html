@@ -1,0 +1,199 @@
+<!--
+  home.component.html
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <p class="hero__eyebrow">PROG2002 Web Development II &middot; Assessment 3</p>
+      <h1>Find a charity event worth showing up for</h1>
+      <p class="hero__lead">
+        Browse fundraisers run by Australian charities, read the full event details and
+        register for your tickets in a couple of clicks. Every booking is stored in our
+        MySQL database through the REST API.
+      </p>
+
+      <div class="btn-row">
+        <a class="btn btn--lg" routerLink="/events">Browse all events</a>
+        @if (nextEvent(); as event) {
+          <a class="btn btn--secondary btn--lg" [routerLink]="['/events', event.eventId]">
+            Next event &middot; {{ event.eventName }}
+          </a>
+        }
+      </div>
+
+      @if (nextEvent(); as event) {
+        <p class="hero__next">
+          <span aria-hidden="true">&#128197;</span>
+          Next up: <strong>{{ event.eventName }}</strong> on {{ nextEventDate() }} at {{ event.location }}
+        </p>
+      }
+    </div>
+
+    <!-- Live statistics straight from the API -->
+    <div class="hero__stats">
+      <div class="stat">
+        <span class="stat__value">{{ totalEvents() }}</span>
+        <span class="stat__label">Charity events</span>
+      </div>
+      <div class="stat">
+        <span class="stat__value">{{ totalCharities() }}</span>
+        <span class="stat__label">Partner charities</span>
+      </div>
+      <div class="stat">
+        <span class="stat__value">{{ totalRegistrations() }}</span>
+        <span class="stat__label">Registrations</span>
+      </div>
+      <div class="stat">
+        <span class="stat__value">{{ totalRaised() }}</span>
+        <span class="stat__label">Raised so far</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FEATURED EVENTS ============================ -->
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <h2>Upcoming events</h2>
+        <p>The next three charity events you can register for, ordered by date.</p>
+      </div>
+      <a class="btn btn--ghost" routerLink="/events">See all events &rarr;</a>
+    </div>
+
+    @if (featured.isLoading()) {
+      <!-- Skeleton placeholders while the API responds -->
+      <div class="grid grid--cards">
+        @for (placeholder of [1, 2, 3]; track placeholder) {
+          <div class="card skeleton-card">
+            <div class="skeleton skeleton-card__media"></div>
+            <div class="card__body stack">
+              <div class="skeleton skeleton-card__line skeleton-card__line--lg"></div>
+              <div class="skeleton skeleton-card__line"></div>
+              <div class="skeleton skeleton-card__line skeleton-card__line--sm"></div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else if (featured.error()) {
+      <div class="alert alert--error" role="alert">
+        <span class="alert__icon" aria-hidden="true">&#9888;</span>
+        <div class="alert__body">
+          <p class="alert__title">The events could not be loaded</p>
+          <p>{{ $any(featured.error()).message }}</p>
+          <button class="btn btn--secondary" type="button" (click)="retry()">Try again</button>
+        </div>
+      </div>
+    } @else if (featured.value()?.length) {
+      <div class="grid grid--cards">
+        @for (event of featured.value(); track event.eventId) {
+          <app-event-card [event]="event" />
+        }
+      </div>
+    } @else {
+      <div class="state">
+        <p>There are no upcoming events at the moment. Please check back soon.</p>
+        <a class="btn btn--secondary" routerLink="/events">View past events</a>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ============================ HOW IT WORKS ============================ -->
+<section class="section section--alt">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <h2>How registration works</h2>
+        <p>Three steps, all powered by the charity events REST API.</p>
+      </div>
+    </div>
+
+    <div class="grid grid--3">
+      <article class="step card">
+        <div class="card__body">
+          <span class="step__number">1</span>
+          <h3>Choose an event</h3>
+          <p>
+            Use the events list or the search page to filter by category, charity or
+            keyword, then open the event to read the full description.
+          </p>
+        </div>
+      </article>
+      <article class="step card">
+        <div class="card__body">
+          <span class="step__number">2</span>
+          <h3>Register and pick tickets</h3>
+          <p>
+            The registration page collects your details and how many tickets you need.
+            Your booking is saved with <code>POST /api/events/:id/registrations</code>.
+          </p>
+        </div>
+      </article>
+      <article class="step card">
+        <div class="card__body">
+          <span class="step__number">3</span>
+          <h3>Join the event</h3>
+          <p>
+            Your name appears in the event's registration list straight away, and the
+            event's running total is updated automatically.
+          </p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CHARITIES ============================ -->
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <h2>Our charity partners</h2>
+        <p>Every event is run by one of these organisations.</p>
+      </div>
+    </div>
+
+    @if (organisations.isLoading()) {
+      <div class="state"><span class="spinner" aria-hidden="true"></span><p>Loading charities&hellip;</p></div>
+    } @else if (organisations.value()?.length) {
+      <div class="grid grid--3">
+        @for (org of organisations.value(); track org.orgId) {
+          <article class="card charity">
+            <div class="card__body">
+              <h3>{{ org.orgName }}</h3>
+              <p>{{ org.description }}</p>
+              <ul class="charity__meta">
+                <li><span aria-hidden="true">&#128231;</span> {{ org.contactEmail }}</li>
+                <li><span aria-hidden="true">&#128222;</span> {{ org.contactPhone }}</li>
+                <li><span aria-hidden="true">&#127760;</span> {{ org.website }}</li>
+              </ul>
+              <p class="charity__count">
+                {{ org.eventCount }} event{{ org.eventCount === 1 ? '' : 's' }}
+              </p>
+            </div>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="state"><p>No charities are registered yet.</p></div>
+    }
+  </div>
+</section>
+
+<!-- ============================ CTA ============================ -->
+<section class="cta">
+  <div class="container cta__inner">
+    <div>
+      <h2>Ready to make a difference?</h2>
+      <p>Pick an event and register your tickets now &mdash; it only takes a minute.</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn--lg" routerLink="/register">Register for an event</a>
+      <a class="btn btn--secondary btn--lg" routerLink="/events">Browse events</a>
+    </div>
+  </div>
+</section>

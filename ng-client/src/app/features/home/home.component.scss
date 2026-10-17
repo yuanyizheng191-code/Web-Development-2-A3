@@ -1,0 +1,225 @@
+/* =============================================================================
+   home.component.scss
+   PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+   ============================================================================= */
+
+/* ---- hero ----------------------------------------------------------------- */
+.hero {
+  background:
+    radial-gradient(1200px 400px at 12% -10%, rgba(20, 184, 166, 0.35), transparent 60%),
+    linear-gradient(140deg, #0b3b39 0%, #0f766e 55%, #115e59 100%);
+  color: #e6fffb;
+  padding-block: 3.5rem 3rem;
+}
+
+.hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.hero__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #7dd3c8;
+  margin-bottom: 0.75rem;
+}
+
+.hero h1 {
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.hero__lead {
+  color: #c9f4ef;
+  font-size: 1.05rem;
+  max-width: 58ch;
+  margin-bottom: 1.5rem;
+}
+
+.hero__next {
+  margin: 1.25rem 0 0;
+  font-size: 0.9rem;
+  color: #a7e8e0;
+}
+
+.hero__next strong {
+  color: #fff;
+}
+
+.hero .btn--secondary {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.hero .btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* ---- live statistics ------------------------------------------------------ */
+.hero__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+}
+
+.stat__value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.stat__label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #a7e8e0;
+}
+
+/* ---- skeleton cards ------------------------------------------------------- */
+.skeleton-card__media {
+  aspect-ratio: 16 / 9;
+  border-radius: 0;
+}
+
+.skeleton-card__line {
+  height: 14px;
+}
+
+.skeleton-card__line--lg {
+  height: 22px;
+  width: 75%;
+}
+
+.skeleton-card__line--sm {
+  width: 45%;
+}
+
+/* ---- alternating section -------------------------------------------------- */
+.section--alt {
+  background: var(--c-surface);
+  border-block: 1px solid var(--c-line);
+}
+
+/* ---- steps ---------------------------------------------------------------- */
+.step {
+  position: relative;
+}
+
+.step__number {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 0.85rem;
+  border-radius: 50%;
+  background: var(--c-primary-soft);
+  color: var(--c-primary-dark);
+  font-weight: 800;
+}
+
+.step p {
+  margin: 0;
+  color: var(--c-muted);
+  font-size: 0.93rem;
+}
+
+.step code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-line);
+  font-size: 0.82rem;
+  color: var(--c-primary-dark);
+}
+
+/* ---- charities ------------------------------------------------------------ */
+.charity h3 {
+  margin-bottom: 0.35rem;
+}
+
+.charity p {
+  margin-bottom: 0.85rem;
+  color: var(--c-muted);
+  font-size: 0.93rem;
+}
+
+.charity__meta {
+  list-style: none;
+  margin: 0 0 0.85rem;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--c-body);
+}
+
+.charity__meta li {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.charity__count {
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--c-line);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ---- call to action ------------------------------------------------------- */
+.cta {
+  background: linear-gradient(120deg, #0f172a, #1e293b);
+  color: #e2e8f0;
+  padding-block: 2.5rem;
+}
+
+.cta__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.cta h2 {
+  color: #fff;
+  margin-bottom: 0.35rem;
+}
+
+.cta p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+/* ---- responsive ----------------------------------------------------------- */
+@media (max-width: 900px) {
+  .hero__inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero__stats {
+    grid-template-columns: 1fr;
+  }
+}
