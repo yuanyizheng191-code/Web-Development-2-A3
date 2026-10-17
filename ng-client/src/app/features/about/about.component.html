@@ -1,0 +1,126 @@
+<!--
+  about.component.html
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<section class="page-head">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <span>About</span>
+    </nav>
+    <h1>About this project</h1>
+    <p class="page-head__lead">
+      PROG2002 Web Development II &middot; Assessment 3 &middot; Team team40
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid grid--2">
+      <article class="card">
+        <div class="card__body">
+          <h2>The client-side website</h2>
+          <p>
+            This website is the client-facing half of the charity events case study. It lets
+            the public browse charity events, search and filter them, read the full details
+            of an event, see every ticket that has been purchased for it, and register for
+            tickets.
+          </p>
+          <p>
+            Every page is rendered from live data: nothing on this site is hard-coded. The
+            page sends an HTTP request to the Express REST API, the API queries MySQL and
+            returns JSON, and Angular renders that JSON with its signal-based templates.
+          </p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card__body">
+          <h2>Technology stack</h2>
+          <ul class="tech-list">
+            <li><strong>Angular v22</strong> - standalone components, signals, <code>resource()</code>, zoneless change detection, built-in control flow</li>
+            <li><strong>TypeScript</strong> - strict typing shared with the API's JSON contract</li>
+            <li><strong>SCSS</strong> - custom design tokens, responsive layout</li>
+            <li><strong>Node.js + Express.js</strong> - the REST API</li>
+            <li><strong>MySQL 8</strong> - events, categories, organisations and registrations</li>
+            <li><strong>Open-Meteo API</strong> - the optional external weather integration</li>
+            <li><strong>SCU cPanel</strong> - public deployment of both websites and the API</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+
+    <article class="card mt-block">
+      <div class="card__body">
+        <h2>Team</h2>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Member</th>
+                <th scope="col">Student ID</th>
+                <th scope="col">Main contribution</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (member of members; track member.studentId) {
+                <tr>
+                  <td><strong>{{ member.name }}</strong></td>
+                  <td>{{ member.studentId }}</td>
+                  <td>{{ member.role }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    <article class="card mt-block">
+      <div class="card__body">
+        <h2>API endpoints used by this website</h2>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Method</th>
+                <th scope="col">Endpoint</th>
+                <th scope="col">Where it is used</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (endpoint of endpoints; track endpoint.path) {
+                <tr>
+                  <td><span class="method">{{ endpoint.method }}</span></td>
+                  <td><code>{{ endpoint.path }}</code></td>
+                  <td>{{ endpoint.used }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    <article class="card mt-block">
+      <div class="card__body">
+        <h2>Generative AI use declaration</h2>
+        <p class="declaration">
+          I acknowledge that I have used GenAI tools to complete this assessment. We used
+          ChatGPT and GitHub Copilot to brainstorm the database and API design, to review
+          and comment our code, to check grammar and clarity in this report, and to help
+          format the documentation, within the parameters outlined in the Assessment Brief
+          and by the Unit Assessor.
+        </p>
+        <p class="text-muted">
+          All generated suggestions were reviewed, tested and understood by both team
+          members before they were committed. The API behaviour is verified by an automated
+          test suite (<code>api/tests/api.test.js</code>) and the schema rules were checked
+          directly in MySQL.
+        </p>
+      </div>
+    </article>
+  </div>
+</section>

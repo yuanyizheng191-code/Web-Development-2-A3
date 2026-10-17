@@ -1,0 +1,80 @@
+/* =============================================================================
+   about.component.scss
+   PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+   ============================================================================= */
+
+.page-head {
+  background: linear-gradient(135deg, #0f766e, #115e59);
+  color: #e6fffb;
+  padding-block: 2.25rem;
+}
+
+.page-head h1 {
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.page-head__lead {
+  margin: 0;
+  color: #c9f4ef;
+}
+
+.breadcrumbs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  color: #a7e8e0;
+  flex-wrap: wrap;
+}
+
+.breadcrumbs a {
+  color: #e6fffb;
+}
+
+.mt-block {
+  margin-top: 1.75rem;
+}
+
+.tech-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.93rem;
+}
+
+.tech-list code,
+.declaration ~ p code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-line);
+  font-size: 0.85rem;
+}
+
+.method {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--c-primary-soft);
+  color: var(--c-primary-dark);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+table.data-table code {
+  font-size: 0.85rem;
+  color: var(--c-primary-dark);
+  word-break: break-all;
+}
+
+.declaration {
+  padding: 1rem 1.15rem;
+  border-left: 4px solid var(--c-primary);
+  background: var(--c-surface-alt);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.95rem;
+}
