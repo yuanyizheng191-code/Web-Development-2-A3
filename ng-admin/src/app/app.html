@@ -1,0 +1,106 @@
+<a class="skip-link" href="#admin-content">Skip to main content</a>
+
+<div class="admin-shell" [class.admin-shell--open]="sidebarOpen()">
+  <!-- =========================================================================
+       SEGMENT 2 of 4 - NAV (the sidebar, present on every page).
+       It is written before the HEADER below only because the CSS grid places the
+       sidebar in the first column; see the note on the header.
+       ========================================================================= -->
+  <aside class="sidebar" aria-label="Admin navigation">
+    <div class="sidebar__brand">
+      <span class="sidebar__mark" aria-hidden="true">&#9881;</span>
+      <span class="sidebar__brand-text">
+        <strong>Charity Events</strong>
+        <small>Admin console</small>
+      </span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <p class="sidebar__group">Overview</p>
+      <ul>
+        <li>
+          <a routerLink="/dashboard" routerLinkActive="is-active" (click)="closeSidebar()">
+            <span class="sidebar__icon" aria-hidden="true">&#128202;</span> Dashboard
+          </a>
+        </li>
+      </ul>
+
+      <p class="sidebar__group">Event management</p>
+      <ul>
+        <li>
+          <a routerLink="/events" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
+            <span class="sidebar__icon" aria-hidden="true">&#128203;</span> All events
+          </a>
+        </li>
+        <li>
+          <a routerLink="/events/new" routerLinkActive="is-active" (click)="closeSidebar()">
+            <span class="sidebar__icon" aria-hidden="true">&#10133;</span> New event
+          </a>
+        </li>
+      </ul>
+
+      <p class="sidebar__group">Registrations</p>
+      <ul>
+        <li>
+          <!-- The registration viewer is reached from an event row, so this entry
+               simply points at the event list where the button lives. -->
+          <a routerLink="/events" (click)="closeSidebar()">
+            <span class="sidebar__icon" aria-hidden="true">&#127903;</span> View registrations
+          </a>
+        </li>
+      </ul>
+
+      <p class="sidebar__group">Other</p>
+      <ul>
+        <li>
+          <a routerLink="/about" routerLinkActive="is-active" (click)="closeSidebar()">
+            <span class="sidebar__icon" aria-hidden="true">&#8505;</span> About this app
+          </a>
+        </li>
+        <li>
+          <a [href]="clientUrl" target="_blank" rel="noopener">
+            <span class="sidebar__icon" aria-hidden="true">&#8599;</span> Public website
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar__footer">
+      <p>PROG2002 A3 &middot; Team {{ teamId }}</p>
+      <p>Yizheng Yuan &middot; Mu Li</p>
+    </div>
+  </aside>
+
+  <!-- =========================================================================
+       SEGMENT 3 of 4 - BODY (the only segment that differs per admin page)
+       ========================================================================= -->
+  <div class="admin-body">
+    <!-- SEGMENT 1 of 4 - HEADER: the slim top bar, common to every page. -->
+    <header class="topbar">
+      <button class="topbar__toggle" type="button" [attr.aria-expanded]="sidebarOpen()" (click)="toggleSidebar()">
+        <span aria-hidden="true">&#9776;</span>
+        <span class="visually-hidden">Toggle navigation</span>
+      </button>
+      <span class="topbar__title">{{ siteName }}</span>
+      <span class="topbar__spacer"></span>
+      <a class="topbar__link" [href]="clientUrl" target="_blank" rel="noopener">View public site &#8599;</a>
+    </header>
+
+    <!-- The routed admin page component is inserted here. -->
+    <main id="admin-content" class="admin-main">
+      <router-outlet />
+    </main>
+
+    <!-- SEGMENT 4 of 4 - FOOTER, common to every page. -->
+    <footer class="admin-footer">
+      <p>
+        &copy; {{ year }} Charity Events Admin &middot; PROG2002 Web Development II,
+        Assessment 3 &middot; Team {{ teamId }}
+      </p>
+      <p class="admin-footer__note">
+        Admin interface for managing charity events - authentication is not required for
+        this assessment.
+      </p>
+    </footer>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+<!doctype html>
+<!--
+  ===========================================================================
+  index.html - ADMIN WEBSITE - the document skeleton
+  ===========================================================================
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+
+  THE FOUR PAGE SEGMENTS REQUIRED BY THE BRIEF
+  --------------------------------------------
+    SEGMENT   SOURCE FILE                            COUNT
+    -------   ------------------------------------   -----------------------
+    Header    src/app/app.html  <header class=...>    defined once
+    Nav       src/app/app.html  <nav class=...>       defined once (sidebar)
+    Body      src/app/features/<page>/*.html          one per page, routed
+    Footer    src/app/app.html  <footer class=...>    defined once
+
+  The admin console uses a sidebar layout, so its Header is the slim top bar and
+  its Nav is the sidebar menu. Both live in the application shell
+  (src/app/app.html) and are therefore present on every admin page, which is what
+  the brief's Part 4 "Navigation" requirement asks for.
+  ===========================================================================
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Charity Events Admin</title>
+    <!--
+      base href. The admin console is deployed under /admin, which is why
+      tools/build_all.ps1 builds it with `ng build --base-href /admin/`.
+      Assets such as /images/funrun.jpg are requested with a leading slash so
+      they resolve from the domain root and work from either application.
+    -->
+    <base href="/admin/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The staff console must never be indexed by a search engine. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  </head>
+  <body>
+    <!-- Segment mount point: the shell and the routed admin page render here. -->
+    <app-root>
+      <p style="font-family: system-ui, sans-serif; padding: 2rem">
+        The admin console needs JavaScript enabled. Please enable it and reload.
+      </p>
+    </app-root>
+  </body>
+</html>

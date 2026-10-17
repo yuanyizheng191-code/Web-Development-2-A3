@@ -1,0 +1,19 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/app", "src/environments"],
+  "entryPointStrategy": "expand",
+  "out": "docs",
+  "name": "PROG2002 A3 - Charity Events Admin Console (Angular v22)",
+  "includeVersion": false,
+  "excludePrivate": true,
+  "readme": "README.md",
+  "categorizeByGroup": true,
+  "visibilityFilters": {
+    "protected": true,
+    "private": false,
+    "inherited": true,
+    "external": false
+  },
+  "exclude": ["**/*.spec.ts"],
+  "tsconfig": "tsconfig.app.json"
+}
