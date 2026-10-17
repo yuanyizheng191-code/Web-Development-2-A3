@@ -1,0 +1,128 @@
+<!--
+  event-list.component.html
+  Events listing + search page.
+
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<section class="page-head">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <span>Events</span>
+    </nav>
+    <h1>Charity events</h1>
+    <p class="page-head__lead">
+      Search and filter every fundraiser in the database. Results come straight from
+      <code>GET /api/events</code>.
+    </p>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <!-- ======================= FILTER PANEL ======================= -->
+    <form class="filters card" (submit)="$event.preventDefault()">
+      <div class="card__body">
+        <div class="filters__grid">
+          <div class="field filters__search">
+            <label for="search">Search events</label>
+            <input
+              id="search"
+              type="search"
+              name="search"
+              placeholder="Try &quot;gala&quot;, &quot;run&quot; or &quot;Bondi&quot;"
+              autocomplete="off"
+              [value]="searchTerm()"
+              (input)="onSearchInput($any($event.target).value)"
+            />
+            <span class="field__hint">
+              Searches the event name, description, purpose, location, category and charity.
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="category">Category</label>
+            <select
+              id="category"
+              name="category"
+              [value]="categoryId() ?? ''"
+              (change)="onCategoryChange($any($event.target).value)"
+            >
+              <option value="">All categories</option>
+              @for (category of categories.value() ?? []; track category.categoryId) {
+                <option [value]="category.categoryId">{{ category.categoryName }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="status">Status</label>
+            <select id="status" name="status" [value]="status()" (change)="onStatusChange($any($event.target).value)">
+              <option value="">Any status</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+              <option value="past">Past</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="sort">Sort by</label>
+            <select id="sort" name="sort" [value]="sort()" (change)="onSortChange($any($event.target).value)">
+              <option value="date">Date (soonest first)</option>
+              <option value="-date">Date (latest first)</option>
+              <option value="name">Name (A&ndash;Z)</option>
+              <option value="-name">Name (Z&ndash;A)</option>
+              <option value="price">Ticket price (low to high)</option>
+              <option value="-price">Ticket price (high to low)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filters__footer">
+          <p class="filters__count" aria-live="polite">
+            @if (results.isLoading()) {
+              Searching&hellip;
+            } @else {
+              <strong>{{ resultCount() }}</strong> event{{ resultCount() === 1 ? '' : 's' }}{{ summary() }}
+            }
+          </p>
+          @if (hasFilters()) {
+            <button class="btn btn--ghost" type="button" (click)="resetFilters()">Reset filters</button>
+          }
+        </div>
+      </div>
+    </form>
+
+    <!-- ======================= RESULTS ======================= -->
+    @if (results.isLoading()) {
+      <div class="state">
+        <span class="spinner" aria-hidden="true"></span>
+        <p>Loading events from the API&hellip;</p>
+      </div>
+    } @else if (results.error()) {
+      <div class="alert alert--error" role="alert">
+        <span class="alert__icon" aria-hidden="true">&#9888;</span>
+        <div class="alert__body">
+          <p class="alert__title">The events could not be loaded</p>
+          <p>{{ $any(results.error()).message }}</p>
+          <button class="btn btn--secondary" type="button" (click)="retry()">Try again</button>
+        </div>
+      </div>
+    } @else if (resultCount() === 0) {
+      <div class="state">
+        <p class="state__icon" aria-hidden="true">&#128269;</p>
+        <h2>No events found</h2>
+        <p>No charity event matches your search. Try a different keyword or clear the filters.</p>
+        <button class="btn btn--secondary" type="button" (click)="resetFilters()">Clear all filters</button>
+      </div>
+    } @else {
+      <div class="grid grid--cards">
+        @for (event of events$(); track event.eventId) {
+          <app-event-card [event]="event" />
+        }
+      </div>
+    }
+  </div>
+</section>
