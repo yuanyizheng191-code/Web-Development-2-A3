@@ -1,0 +1,275 @@
+<!--
+  event-detail.component.html
+  Event Details page - event information, the complete registration list
+  (latest purchase first) and the Open-Meteo forecast for the venue.
+
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<section class="section">
+  <div class="container">
+    <!-- Loading -->
+    @if (eventResource.isLoading()) {
+      <div class="state">
+        <span class="spinner" aria-hidden="true"></span>
+        <p>Loading event details&hellip;</p>
+      </div>
+    }
+
+    <!-- Error (event not found, API offline, ...) -->
+    @else if (eventResource.error()) {
+      <div class="alert alert--error" role="alert">
+        <span class="alert__icon" aria-hidden="true">&#9888;</span>
+        <div class="alert__body">
+          <p class="alert__title">This event could not be loaded</p>
+          <p>{{ $any(eventResource.error()).message }}</p>
+          <div class="btn-row">
+            <button class="btn btn--secondary" type="button" (click)="retry()">Try again</button>
+            <a class="btn btn--ghost" routerLink="/events">Back to all events</a>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Event -->
+    @else if (event(); as ev) {
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a routerLink="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a routerLink="/events">Events</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ ev.eventName }}</span>
+      </nav>
+
+      <header class="detail-head">
+        <div>
+          <span class="badge" [class]="statusClassValue()">{{ statusLabel() }}</span>
+          @if (ev.categoryName) {
+            <span class="chip">{{ ev.categoryName }}</span>
+          }
+          <h1>{{ ev.eventName }}</h1>
+          @if (ev.description) {
+            <p class="detail-head__tagline">{{ ev.description }}</p>
+          }
+          <ul class="detail-meta">
+            <li><span aria-hidden="true">&#128197;</span> {{ formatDate(ev.eventDate) }} at {{ formatTime(ev.eventDate) }}</li>
+            <li><span aria-hidden="true">&#128205;</span> {{ ev.location }}</li>
+            @if (ev.orgName) {
+              <li><span aria-hidden="true">&#127970;</span> {{ ev.orgName }}</li>
+            }
+            @if (ev.purpose) {
+              <li><span aria-hidden="true">&#127919;</span> {{ ev.purpose }}</li>
+            }
+          </ul>
+        </div>
+
+        <!-- Register button - links to the new Event Registration Page -->
+        <aside class="detail-cta">
+          <p class="detail-cta__price">{{ priceText() }}</p>
+          <p class="detail-cta__price-label">per ticket</p>
+          @if (canRegister()) {
+            <a class="btn btn--lg btn--block" [routerLink]="['/register']" [queryParams]="{ eventId: ev.eventId }">
+              Register for this event
+            </a>
+          } @else {
+            <button class="btn btn--lg btn--block" type="button" disabled>Registration closed</button>
+            <p class="detail-cta__note">{{ registrationClosedReason() }}</p>
+          }
+          <p class="detail-cta__note">
+            {{ ev.registrationCount }} registration{{ ev.registrationCount === 1 ? '' : 's' }}
+            &middot; {{ ev.ticketsSold }} ticket{{ ev.ticketsSold === 1 ? '' : 's' }} sold
+          </p>
+        </aside>
+      </header>
+
+      <div class="detail-grid">
+        <!-- ============ main column ============ -->
+        <div class="detail-main">
+          @if (showImage()) {
+            <img class="detail-hero" [src]="imageSrc()" [alt]="ev.eventName" (error)="onImageError()" />
+          }
+
+          <section class="card">
+            <div class="card__body">
+              <h2>About this event</h2>
+              <p class="detail-text">
+                {{ ev.fullDescription || ev.description || 'No further details have been provided for this event yet.' }}
+              </p>
+
+              @if (ev.goalAmount) {
+                <div class="detail-progress">
+                  <div class="progress" role="progressbar" [attr.aria-valuenow]="progress()" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress__bar" [style.width.%]="progress()"></div>
+                  </div>
+                  <p class="detail-progress__text">
+                    <strong>{{ raisedText() }}</strong> raised of the {{ goalText() }} goal ({{ progress() }}%)
+                  </p>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- ============ weather (external API, Part 6) ============ -->
+          @if (weather.value(); as forecast) {
+            <section class="card weather">
+              <div class="card__body">
+                <div class="weather__head">
+                  <h2>Weather forecast for the venue</h2>
+                  <span class="chip">{{ forecast.timezone }}</span>
+                </div>
+                <p class="text-muted weather__source">
+                  Live 7-day forecast from the Open-Meteo API for
+                  {{ forecast.latitude }}, {{ forecast.longitude }} ({{ ev.location }}).
+                </p>
+                <ul class="weather__list">
+                  @for (day of forecast.forecast; track day.date) {
+                    <li class="weather__day">
+                      <span class="weather__date">{{ formatDate(day.date) }}</span>
+                      <span class="weather__icon" aria-hidden="true">{{ day.icon }}</span>
+                      <span class="weather__desc">{{ day.description }}</span>
+                      <span class="weather__temp">{{ day.temperatureMin }}&deg; / {{ day.temperatureMax }}&deg;C</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </section>
+          } @else if (weather.isLoading()) {
+            <section class="card weather">
+              <div class="card__body">
+                <h2>Weather forecast for the venue</h2>
+                <div class="state state--inline">
+                  <span class="spinner" aria-hidden="true"></span>
+                  <p>Fetching the forecast from Open-Meteo&hellip;</p>
+                </div>
+              </div>
+            </section>
+          }
+        </div>
+
+        <!-- ============ side column ============ -->
+        <aside class="detail-side">
+          <section class="card">
+            <div class="card__body">
+              <h3>Event summary</h3>
+              <dl class="definition">
+                <dt>Date</dt>
+                <dd>{{ formatDate(ev.eventDate) }}</dd>
+                <dt>Time</dt>
+                <dd>{{ formatTime(ev.eventDate) }}</dd>
+                <dt>Venue</dt>
+                <dd>{{ ev.location }}</dd>
+                <dt>Category</dt>
+                <dd>{{ ev.categoryName || 'Uncategorised' }}</dd>
+                <dt>Charity</dt>
+                <dd>{{ ev.orgName || 'Not specified' }}</dd>
+                <dt>Ticket price</dt>
+                <dd>{{ priceText() }}</dd>
+                <dt>Capacity sold</dt>
+                <dd>{{ ev.ticketsSold }} tickets</dd>
+                @if (ev.latitude !== null) {
+                  <dt>Coordinates</dt>
+                  <dd>{{ ev.latitude }}, {{ ev.longitude }}</dd>
+                }
+              </dl>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card__body">
+              <h3>API calls used on this page</h3>
+              <ul class="api-list">
+                <li><code>GET /api/events/{{ ev.eventId }}</code></li>
+                <li><code>GET /api/events/{{ ev.eventId }}/weather</code></li>
+              </ul>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <!-- ============ registrations ============ -->
+      <section class="registrations">
+        <div class="section__head">
+          <div>
+            <h2>Registrations for this event</h2>
+            <p>
+              Every ticket purchased for <strong>{{ ev.eventName }}</strong>, sorted by
+              {{ order() === 'desc' ? 'the latest purchase date first' : 'the earliest purchase date first' }}.
+            </p>
+          </div>
+          <button class="btn btn--ghost" type="button" (click)="toggleOrder()">
+            @if (order() === 'desc') {
+              Show oldest first
+            } @else {
+              Show latest first
+            }
+          </button>
+        </div>
+
+        @if (registrations().length === 0) {
+          <div class="state card">
+            <p class="state__icon" aria-hidden="true">&#127903;</p>
+            <p>Nobody has registered for this event yet. Be the first!</p>
+            @if (canRegister()) {
+              <a class="btn" [routerLink]="['/register']" [queryParams]="{ eventId: ev.eventId }">
+                Register now
+              </a>
+            }
+          </div>
+        } @else {
+          <div class="table-wrap">
+            <table class="data-table">
+              <caption class="visually-hidden">Registrations for {{ ev.eventName }}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Attendee</th>
+                  <th scope="col">Contact</th>
+                  <th scope="col">Organisation</th>
+                  <th scope="col" class="table-numeric">Tickets</th>
+                  <th scope="col" class="table-numeric">Amount</th>
+                  <th scope="col">Purchased</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (registration of registrations(); track registration.registrationId; let index = $index) {
+                  <tr>
+                    <td>{{ index + 1 }}</td>
+                    <td>
+                      <strong>{{ registration.attendeeName }}</strong>
+                      @if (registration.notes) {
+                        <br /><small class="text-muted">{{ registration.notes }}</small>
+                      }
+                    </td>
+                    <td>
+                      {{ registration.email }}
+                      @if (registration.phone) {
+                        <br /><small class="text-muted">{{ registration.phone }}</small>
+                      }
+                    </td>
+                    <td>{{ registration.organisation || '—' }}</td>
+                    <td class="table-numeric">{{ registration.ticketsPurchased }}</td>
+                    <td class="table-numeric">{{ formatCurrency(registration.totalAmount) }}</td>
+                    <td>
+                      {{ formatDateTime(registration.registrationDate) }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row" colspan="4">Totals</th>
+                  <th scope="row" class="table-numeric">{{ totalTickets() }}</th>
+                  <th scope="row" class="table-numeric">{{ formatCurrency(totalValue()) }}</th>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <p class="registrations__note text-muted">
+            Data source: <code>GET /api/events/{{ ev.eventId }}/registrations?order={{ order() }}</code>
+          </p>
+        }
+      </section>
+    }
+  </div>
+</section>

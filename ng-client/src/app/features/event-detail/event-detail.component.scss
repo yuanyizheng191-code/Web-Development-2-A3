@@ -1,0 +1,277 @@
+/* =============================================================================
+   event-detail.component.scss
+   PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+   ============================================================================= */
+
+.breadcrumbs {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  color: var(--c-muted);
+  flex-wrap: wrap;
+}
+
+/* ---- page header ---------------------------------------------------------- */
+.detail-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 2rem;
+  align-items: start;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.detail-head h1 {
+  margin: 0.6rem 0 0.4rem;
+}
+
+.detail-head__tagline {
+  color: var(--c-muted);
+  font-size: 1.05rem;
+  max-width: 62ch;
+  margin-bottom: 0.85rem;
+}
+
+.detail-meta {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-size: 0.92rem;
+  color: var(--c-body);
+}
+
+.detail-meta li {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+/* ---- register box --------------------------------------------------------- */
+.detail-cta {
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.detail-cta__price {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--c-primary-dark);
+  line-height: 1.1;
+}
+
+.detail-cta__price-label {
+  margin: 0 0 1rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-muted);
+}
+
+.detail-cta__note {
+  margin: 0.85rem 0 0;
+  font-size: 0.82rem;
+  color: var(--c-muted);
+}
+
+/* ---- two column layout ---------------------------------------------------- */
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.detail-main {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.detail-side {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.detail-hero {
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--c-line);
+}
+
+.detail-text {
+  white-space: pre-line;
+  color: var(--c-body);
+  margin-bottom: 0;
+}
+
+.detail-progress {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--c-line);
+}
+
+.detail-progress__text {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--c-muted);
+}
+
+.detail-progress__text strong {
+  color: var(--c-primary-dark);
+}
+
+/* ---- weather -------------------------------------------------------------- */
+.weather__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.weather__head h2 {
+  margin: 0;
+}
+
+.weather__source {
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.weather__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.weather__day {
+  display: grid;
+  grid-template-columns: 1.4fr auto 2fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-line);
+  font-size: 0.9rem;
+}
+
+.weather__date {
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.weather__icon {
+  font-size: 1.2rem;
+}
+
+.weather__temp {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--c-primary-dark);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.state--inline {
+  padding: 1.25rem;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+/* ---- side panel definitions ---------------------------------------------- */
+.definition {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem 1rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.definition dt {
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+
+.definition dd {
+  margin: 0;
+  color: var(--c-ink);
+  font-weight: 600;
+  text-align: right;
+}
+
+.api-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.api-list code,
+.registrations__note code {
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-line);
+  color: var(--c-primary-dark);
+  word-break: break-all;
+}
+
+/* ---- registrations -------------------------------------------------------- */
+.registrations {
+  margin-top: 2.5rem;
+}
+
+.registrations__note {
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+}
+
+table.data-table tfoot th,
+table.data-table tfoot td {
+  background: var(--c-surface-alt);
+  font-weight: 700;
+  color: var(--c-ink);
+  border-top: 2px solid var(--c-line);
+}
+
+/* ---- responsive ----------------------------------------------------------- */
+@media (max-width: 1000px) {
+  .detail-head,
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-cta {
+    text-align: left;
+  }
+}
+
+@media (max-width: 620px) {
+  .weather__day {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.25rem;
+  }
+
+  .weather__desc {
+    grid-column: 1 / -1;
+  }
+}
