@@ -1,0 +1,322 @@
+<!--
+  register.component.html
+  The NEW registration page for this version of the site.
+
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<section class="page-head">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a routerLink="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <span>Register</span>
+    </nav>
+    <h1>Register for an event</h1>
+    <p class="page-head__lead">
+      Pick the charity event you want to attend and how many tickets you need. Your
+      registration is saved through <code>POST /api/events/:id/registrations</code>.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <!-- ===================== CONFIRMATION ===================== -->
+    @if (confirmation(); as saved) {
+      <div class="alert alert--success confirmation" role="status">
+        <span class="alert__icon" aria-hidden="true">&#10004;</span>
+        <div class="alert__body">
+          <p class="alert__title">Registration confirmed - thank you, {{ saved.attendeeName }}!</p>
+          <p>
+            {{ saved.ticketsPurchased }} ticket{{ saved.ticketsPurchased === 1 ? '' : 's' }} for
+            <strong>{{ event()?.eventName }}</strong> on {{ formatDate(event()?.eventDate) }}.
+            Total paid: <strong>{{ formatCurrency(saved.totalAmount) }}</strong>.
+          </p>
+          <dl class="confirmation__ref">
+            <dt>Registration reference</dt>
+            <dd>#{{ saved.registrationId }}</dd>
+            <dt>Confirmation e-mail</dt>
+            <dd>{{ saved.email }}</dd>
+            <dt>Registered on</dt>
+            <dd>{{ formatDate(saved.registrationDate) }} at {{ formatTime(saved.registrationDate) }}</dd>
+          </dl>
+          <div class="btn-row">
+            @if (event()) {
+              <a class="btn btn--secondary" [routerLink]="['/events', event()!.eventId]">
+                View the event and its registration list
+              </a>
+            }
+            <button class="btn btn--ghost" type="button" (click)="registerAnother()">
+              Register another attendee
+            </button>
+            <a class="btn btn--ghost" routerLink="/events">Browse more events</a>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="register-grid">
+      <!-- ===================== FORM ===================== -->
+      <div class="register-form-wrap">
+        <form #registrationForm class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="card__body">
+            <h2 class="register-form__title">Your registration details</h2>
+            <p class="text-muted">
+              Fields marked <span class="required">*</span> are required. The number of tickets
+              determines the total, which is calculated by the server.
+            </p>
+
+            <!-- Server / validation alerts -->
+            @if (validationAlert(); as message) {
+              <div class="alert alert--error" role="alert">
+                <span class="alert__icon" aria-hidden="true">&#9888;</span>
+                <div class="alert__body">
+                  <p class="alert__title">Please check your details</p>
+                  <p>{{ message }}</p>
+                </div>
+              </div>
+            }
+
+            @if (submitError(); as message) {
+              <div class="alert alert--error" role="alert">
+                <span class="alert__icon" aria-hidden="true">&#10060;</span>
+                <div class="alert__body">
+                  <p class="alert__title">The registration was not saved</p>
+                  <p>{{ message }}</p>
+                </div>
+              </div>
+            }
+
+            <div class="form-grid">
+              <!-- event selector -->
+              <div class="field field--full">
+                <label for="eventId">Event <span class="required">*</span></label>
+                <select
+                  id="eventId"
+                  formControlName="eventId"
+                  [class.is-invalid]="showError('eventId')"
+                  [attr.disabled]="lockedToQueryString() ? true : null"
+                >
+                  <option [ngValue]="null">-- Please choose an event --</option>
+                  @for (event of events.value() ?? []; track event.eventId) {
+                    <option [ngValue]="event.eventId">
+                      {{ event.eventName }} &middot; {{ formatDate(event.eventDate) }} &middot; {{ event.location }}
+                    </option>
+                  }
+                </select>
+                @if (showError('eventId')) {
+                  <span class="field__error">{{ errorFor('eventId') }}</span>
+                }
+                @if (lockedToQueryString()) {
+                  <span class="field__hint">
+                    The event was selected for you from the previous page. Use the
+                    <a routerLink="/events">events list</a> to register for a different one.
+                  </span>
+                }
+              </div>
+
+              <!-- attendee -->
+              <div class="field">
+                <label for="attendeeName">Full name <span class="required">*</span></label>
+                <input
+                  id="attendeeName"
+                  type="text"
+                  formControlName="attendeeName"
+                  autocomplete="name"
+                  [class.is-invalid]="showError('attendeeName')"
+                />
+                @if (showError('attendeeName')) {
+                  <span class="field__error">{{ errorFor('attendeeName') }}</span>
+                }
+              </div>
+
+              <div class="field">
+                <label for="email">E-mail address <span class="required">*</span></label>
+                <input
+                  id="email"
+                  type="email"
+                  formControlName="email"
+                  autocomplete="email"
+                  [class.is-invalid]="showError('email')"
+                />
+                @if (showError('email')) {
+                  <span class="field__error">{{ errorFor('email') }}</span>
+                } @else {
+                  <span class="field__hint">One registration per e-mail address per event.</span>
+                }
+              </div>
+
+              <div class="field">
+                <label for="phone">Phone number</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  formControlName="phone"
+                  autocomplete="tel"
+                  placeholder="0400 000 000"
+                  [class.is-invalid]="showError('phone')"
+                />
+                @if (showError('phone')) {
+                  <span class="field__error">{{ errorFor('phone') }}</span>
+                }
+              </div>
+
+              <div class="field">
+                <label for="organisation">Organisation <span class="required">*</span></label>
+                <input
+                  id="organisation"
+                  type="text"
+                  formControlName="organisation"
+                  placeholder="Company, school, club, or &quot;Individual&quot;"
+                  [class.is-invalid]="showError('organisation')"
+                />
+                @if (showError('organisation')) {
+                  <span class="field__error">{{ errorFor('organisation') }}</span>
+                } @else {
+                  <span class="field__hint">
+                    The registrations table stores this for every booking - enter
+                    &quot;Individual&quot; if you are attending on your own.
+                  </span>
+                }
+              </div>
+
+              <div class="field">
+                <label for="ticketsPurchased">Number of tickets <span class="required">*</span></label>
+                <input
+                  id="ticketsPurchased"
+                  type="number"
+                  formControlName="ticketsPurchased"
+                  min="1"
+                  max="100"
+                  step="1"
+                  [class.is-invalid]="showError('ticketsPurchased')"
+                />
+                @if (showError('ticketsPurchased')) {
+                  <span class="field__error">{{ errorFor('ticketsPurchased') }}</span>
+                } @else {
+                  <span class="field__hint">Between 1 and 100 tickets per registration.</span>
+                }
+              </div>
+
+              <div class="field">
+                <label>Total</label>
+                <p class="register-total">{{ formatCurrency(orderTotal()) }}</p>
+                <span class="field__hint">
+                  {{ formatPrice(ticketPrice()) }} per ticket &times;
+                  {{ ticketCountLabel() }} ticket(s)
+                </span>
+              </div>
+
+              <div class="field field--full">
+                <label for="notes">Notes (optional)</label>
+                <textarea
+                  id="notes"
+                  rows="3"
+                  formControlName="notes"
+                  placeholder="Dietary requirements, accessibility needs, group name..."
+                  [class.is-invalid]="showError('notes')"
+                ></textarea>
+                @if (showError('notes')) {
+                  <span class="field__error">{{ errorFor('notes') }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="register-form__actions">
+              <button class="btn btn--lg" type="submit" [disabled]="submitting() || (event() !== null && !registrationOpen())">
+                @if (submitting()) {
+                  Saving your registration&hellip;
+                } @else {
+                  Finalise registration
+                }
+              </button>
+              <button class="btn btn--ghost" type="button" (click)="form.reset()" [disabled]="submitting()">
+                Clear form
+              </button>
+            </div>
+
+            <p class="register-form__note text-muted">
+              The date of registration is recorded automatically by the database
+              (<code>registration_date</code>).
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <!-- ===================== EVENT PANEL ===================== -->
+      <aside class="register-aside">
+        @if (selectedEvent.isLoading()) {
+          <div class="card"><div class="card__body state"><span class="spinner" aria-hidden="true"></span><p>Loading event&hellip;</p></div></div>
+        } @else if (event(); as ev) {
+          <section class="card event-panel">
+            @if (showImage()) {
+              <img class="event-panel__img" [src]="imageSrc()" [alt]="ev.eventName" (error)="onImageError()" />
+            }
+            <div class="card__body">
+              <h2 class="event-panel__title">{{ ev.eventName }}</h2>
+              <p class="event-panel__tagline">{{ ev.description }}</p>
+
+              <ul class="event-panel__meta">
+                <li><span aria-hidden="true">&#128197;</span> {{ formatDate(ev.eventDate) }} at {{ formatTime(ev.eventDate) }}</li>
+                <li><span aria-hidden="true">&#128205;</span> {{ ev.location }}</li>
+                @if (ev.orgName) {
+                  <li><span aria-hidden="true">&#127970;</span> {{ ev.orgName }}</li>
+                }
+                @if (ev.categoryName) {
+                  <li><span aria-hidden="true">&#127991;</span> {{ ev.categoryName }}</li>
+                }
+                <li><span aria-hidden="true">&#127903;</span> {{ priceText() }} per ticket</li>
+              </ul>
+
+              @if (ev.fullDescription) {
+                <p class="event-panel__description">{{ ev.fullDescription }}</p>
+              }
+
+              <p class="event-panel__stat">
+                <strong>{{ ev.registrationCount }}</strong> registration{{ ev.registrationCount === 1 ? '' : 's' }} so far
+                &middot; <strong>{{ ev.ticketsSold }}</strong> ticket{{ ev.ticketsSold === 1 ? '' : 's' }} sold
+              </p>
+
+              @if (!registrationOpen()) {
+                <div class="alert alert--warning" role="alert">
+                  <span class="alert__icon" aria-hidden="true">&#9203;</span>
+                  <div class="alert__body">
+                    <p class="alert__title">Registration is closed</p>
+                    <p>{{ closedReason() }}</p>
+                  </div>
+                </div>
+              }
+
+              <a class="btn btn--secondary btn--block" [routerLink]="['/events', ev.eventId]">
+                See the full event details
+              </a>
+            </div>
+          </section>
+        } @else {
+          <section class="card">
+            <div class="card__body">
+              <h2>Which event?</h2>
+              <p class="text-muted">
+                Choose an event from the list and its details will appear here, so you can
+                confirm exactly what you are registering for.
+              </p>
+              <a class="btn btn--secondary btn--block" routerLink="/events">Browse all events</a>
+            </div>
+          </section>
+        }
+
+        <section class="card help">
+          <div class="card__body">
+            <h3>What happens next?</h3>
+            <ol class="help__list">
+              <li>The form is validated in the browser first.</li>
+              <li>The API validates the same rules again and stores the registration in MySQL.</li>
+              <li>Your name appears in the event's registration list immediately.</li>
+              <li>The event's "raised so far" total is updated automatically.</li>
+            </ol>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+</section>
