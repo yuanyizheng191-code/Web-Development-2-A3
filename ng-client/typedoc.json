@@ -1,0 +1,25 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/app", "src/environments"],
+  "entryPointStrategy": "expand",
+  "out": "docs",
+  "name": "PROG2002 A3 - Charity Events Client Website (Angular v22)",
+  "includeVersion": false,
+  "excludePrivate": true,
+  "excludeInternal": false,
+  "readme": "README.md",
+  "categorizeByGroup": true,
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  },
+  "visibilityFilters": {
+    "protected": true,
+    "private": false,
+    "inherited": true,
+    "external": false
+  },
+  "plugin": [],
+  "exclude": ["**/*.spec.ts"],
+  "tsconfig": "tsconfig.app.json"
+}

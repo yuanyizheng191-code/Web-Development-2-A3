@@ -1,0 +1,140 @@
+<!--
+  =============================================================================
+  app.html - CLIENT WEBSITE APPLICATION SHELL
+  =============================================================================
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+
+  This one file holds the three segments that must be COMMON TO EVERY PAGE, as
+  required by the brief ("The common segments like Header, Nav, and Footer should
+  be created once and be common across all your pages").
+
+      SEGMENT 1  HEADER   <header class="site-header">      brand + contact
+      SEGMENT 2  NAV      <nav id="primary-navigation">     the site menu
+      SEGMENT 3  BODY     <router-outlet />                 swapped per route
+      SEGMENT 4  FOOTER   <footer class="site-footer">      links + credits
+
+  The Body segment is the only part that changes between pages: Angular renders
+  the routed page component into <router-outlet />. Because Header, Nav and Footer
+  sit outside the outlet they are created once, rendered once, and shared by all
+  six client pages - Home, Events, Event Details, Register, About and 404.
+
+  CONSEQUENCE (and the improvement over Assessment 2, where the <nav> and
+  <footer> markup was copy-pasted into index.html, search.html and event.html):
+  editing this file changes the header, menu or footer on every page at once.
+  =============================================================================
+-->
+
+<!-- Skip link: the first focusable element, so keyboard users can bypass the menu. -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- =========================================================================
+     SEGMENT 1 of 4 - HEADER  (common to every page)
+     ========================================================================= -->
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" routerLink="/" (click)="closeMenu()" aria-label="Charity Events home">
+      <span class="brand__mark" aria-hidden="true">&#10084;</span>
+      <span class="brand__text">
+        <strong>{{ siteName }}</strong>
+        <small>Support a cause, book a ticket</small>
+      </span>
+    </a>
+
+    <button
+      class="nav-toggle"
+      type="button"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="primary-navigation"
+      (click)="toggleMenu()"
+    >
+      <span class="nav-toggle__bar" aria-hidden="true"></span>
+      <span class="nav-toggle__bar" aria-hidden="true"></span>
+      <span class="nav-toggle__bar" aria-hidden="true"></span>
+      <span class="visually-hidden">Toggle navigation</span>
+    </button>
+
+    <!-- =====================================================================
+         SEGMENT 2 of 4 - NAV  (common to every page)
+         The same menu is used by all six pages; the active item is highlighted
+         automatically by routerLinkActive.
+         ===================================================================== -->
+    <nav id="primary-navigation" class="primary-nav" [class.primary-nav--open]="menuOpen()">
+      <ul class="primary-nav__list">
+        <li>
+          <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">
+            Home
+          </a>
+        </li>
+        <li>
+          <a routerLink="/events" routerLinkActive="is-active" (click)="closeMenu()">Events</a>
+        </li>
+        <li>
+          <a routerLink="/register" routerLinkActive="is-active" (click)="closeMenu()">Register</a>
+        </li>
+        <li>
+          <a routerLink="/about" routerLinkActive="is-active" (click)="closeMenu()">About</a>
+        </li>
+        <li>
+          <!-- Link to the admin-side website. -->
+          <a class="primary-nav__admin" [href]="adminUrl" target="_blank" rel="noopener">
+            Admin site <span aria-hidden="true">&#8599;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<!-- =========================================================================
+     SEGMENT 3 of 4 - BODY  (the only segment that differs per page)
+     The Angular router inserts the page component here.
+     ========================================================================= -->
+<main id="main-content" class="site-main">
+  <router-outlet />
+</main>
+
+<!-- =========================================================================
+     SEGMENT 4 of 4 - FOOTER  (common to every page)
+     ========================================================================= -->
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <div>
+      <h2 class="site-footer__heading">{{ siteName }}</h2>
+      <p>
+        A dynamic charity events website built for PROG2002 Web Development II,
+        Assessment 3 - Southern Cross University.
+      </p>
+    </div>
+    <div>
+      <h3 class="site-footer__heading">Explore</h3>
+      <ul class="site-footer__links">
+        <li><a routerLink="/">Home</a></li>
+        <li><a routerLink="/events">All events</a></li>
+        <li><a routerLink="/register">Register for an event</a></li>
+        <li><a routerLink="/about">About this project</a></li>
+        <li><a [href]="adminUrl" target="_blank" rel="noopener">Admin website</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="site-footer__heading">Built with</h3>
+      <ul class="site-footer__links">
+        <li>Angular v22 (signals, zoneless)</li>
+        <li>TypeScript &amp; SCSS</li>
+        <li>Node.js + Express.js REST API</li>
+        <li>MySQL database</li>
+        <li>Open-Meteo weather API</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="site-footer__heading">Team</h3>
+      <ul class="site-footer__links">
+        <li>Team ID: {{ teamId }}</li>
+        <li>Yizheng Yuan (24833044)</li>
+        <li>Mu Li (224832355)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container site-footer__bottom">
+    <p>&copy; {{ year }} {{ siteName }} &middot; PROG2002 Assessment 3 &middot; Team {{ teamId }}</p>
+  </div>
+</footer>

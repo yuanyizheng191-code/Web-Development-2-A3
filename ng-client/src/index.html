@@ -1,0 +1,66 @@
+<!doctype html>
+<!--
+  ===========================================================================
+  index.html - CLIENT WEBSITE - the document skeleton
+  ===========================================================================
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+
+  This file is deliberately almost empty. It provides only what every HTML
+  document must have - <head>, the mount point and the bundle reference - and
+  nothing that is page specific.
+
+  THE FOUR PAGE SEGMENTS
+  ----------------------
+  Every page is broken into Header, Nav, Body and Footer, with Header, Nav and
+  Footer created ONCE and shared across all pages. Angular
+  achieves that with the application shell, so each shared segment exists in
+  exactly one place in the source:
+
+    SEGMENT   SOURCE FILE                          COUNT
+    -------   ----------------------------------   -------------------------
+    Header    src/app/app.html  <header>            defined once, used everywhere
+    Nav       src/app/app.html  <nav>               defined once, used everywhere
+    Body      src/app/features/<page>/*.html        one per page, routed
+    Footer    src/app/app.html  <footer>            defined once, used everywhere
+
+  <app-root> below is the mount point named in src/main.ts. Angular inserts the
+  shell (Header + Nav, then Footer) and the routed Body page inside it. Editing
+  the header or footer once therefore updates every page - which is the
+  improvement over Assessment 2, where the <nav> and <footer> markup had to be
+  copied into index.html, search.html and event.html separately.
+
+  There are no duplicated page-segment blocks anywhere in this project: the
+  string "site-footer" appears exactly once in the source.
+  ===========================================================================
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Charity Events</title>
+    <!--
+      base href. The client website is deployed at the domain root, so "/" is
+      correct. (The admin console uses "/admin/" - see ng-admin/src/index.html.)
+    -->
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Used by search engines and link previews. -->
+    <meta
+      name="description"
+      content="Browse Australian charity events, read the full event details and register for tickets. PROG2002 Assessment 3, team team40."
+    />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  </head>
+  <body>
+    <!--
+      SEGMENT MOUNT POINT.
+      The application shell (Header + Nav + Footer) and the routed Body page are
+      rendered here. The nested paragraph is replaced as soon as Angular boots,
+      and acts as a readable fallback if JavaScript is disabled.
+    -->
+    <app-root>
+      <p style="font-family: system-ui, sans-serif; padding: 2rem">
+        This website needs JavaScript enabled. Please enable it and reload the page.
+      </p>
+    </app-root>
+  </body>
+</html>
