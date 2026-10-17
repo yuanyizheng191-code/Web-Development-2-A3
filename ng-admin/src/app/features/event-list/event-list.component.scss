@@ -1,0 +1,96 @@
+/* =============================================================================
+   event-list.component.scss - admin event table
+   PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+   ============================================================================= */
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.page-head h1 {
+  margin-bottom: 0.25rem;
+}
+
+.page-head__lead {
+  margin: 0;
+  color: var(--c-muted);
+}
+
+.page-head code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-line);
+  font-size: 0.85rem;
+}
+
+/* ---- alerts --------------------------------------------------------------- */
+.alert {
+  position: relative;
+}
+
+.alert__close {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+/* ---- filters -------------------------------------------------------------- */
+.filters {
+  margin-bottom: 1.25rem;
+}
+
+.filters__row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: end;
+}
+
+.filters__actions {
+  padding-bottom: 0.1rem;
+}
+
+/* ---- summary -------------------------------------------------------------- */
+.list-summary {
+  margin-bottom: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--c-muted);
+}
+
+.list-summary strong {
+  color: var(--c-ink);
+}
+
+/* ---- table ---------------------------------------------------------------- */
+.admin-table td {
+  vertical-align: middle;
+}
+
+.row--busy {
+  opacity: 0.55;
+}
+
+.row-note {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--c-warning);
+}
+
+@media (max-width: 1100px) {
+  .filters__row {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}

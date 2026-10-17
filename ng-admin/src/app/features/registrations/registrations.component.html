@@ -1,0 +1,169 @@
+<!--
+  registrations.component.html - registration viewer for one event (admin)
+
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<div class="page-head">
+  <div>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a routerLink="/events">Events</a>
+      <span aria-hidden="true">/</span>
+      <span>Registrations</span>
+    </nav>
+    <h1>Registrations &mdash; {{ event()?.eventName || ('event #' + id()) }}</h1>
+    <p class="page-head__lead">
+      Booking list for this event, most recent purchase first. Data source:
+      <code>GET /api/events/{{ id() }}/registrations</code>.
+    </p>
+  </div>
+  <div class="btn-row">
+    <a class="btn btn--secondary" [routerLink]="['/events', id(), 'edit']">Update this event</a>
+    <a class="btn btn--ghost" routerLink="/events">All events</a>
+  </div>
+</div>
+
+@if (feedback(); as note) {
+  <div
+    class="alert"
+    [class.alert--success]="note.type === 'success'"
+    [class.alert--error]="note.type === 'error'"
+    role="alert"
+  >
+    <span class="alert__icon" aria-hidden="true">{{ note.type === 'success' ? '&#10004;' : '&#9888;' }}</span>
+    <div class="alert__body">
+      <p class="alert__title">{{ note.type === 'success' ? 'Done' : 'Action failed' }}</p>
+      <p>{{ note.message }}</p>
+    </div>
+    <button class="alert__close" type="button" (click)="dismissFeedback()" aria-label="Dismiss">&times;</button>
+  </div>
+}
+
+@if (eventResource.error() || registrationsResource.error()) {
+  <div class="alert alert--error" role="alert">
+    <span class="alert__icon" aria-hidden="true">&#9888;</span>
+    <div class="alert__body">
+      <p class="alert__title">The registrations could not be loaded</p>
+      <p>
+        {{ $any(eventResource.error() || registrationsResource.error()).message }}
+      </p>
+      <button class="btn btn--secondary" type="button" (click)="retry()">Try again</button>
+    </div>
+  </div>
+} @else if (registrationsResource.isLoading()) {
+  <div class="state card">
+    <span class="spinner" aria-hidden="true"></span>
+    <p>Loading registrations&hellip;</p>
+  </div>
+} @else {
+  <!-- ===================== EVENT SUMMARY ===================== -->
+  @if (event(); as ev) {
+    <section class="stat-grid">
+      <article class="stat-card">
+        <p class="stat-card__label">Event date</p>
+        <p class="stat-card__value stat-card__value--small">{{ formatDateTime(ev.eventDate) }}</p>
+        <p class="stat-card__foot">{{ ev.location }}</p>
+      </article>
+      <article class="stat-card">
+        <p class="stat-card__label">Status</p>
+        <p class="stat-card__value stat-card__value--small">
+          <span class="badge" [class]="statusClass(ev.status)">{{ ev.status }}</span>
+        </p>
+        <p class="stat-card__foot">
+          @if (deletable()) {
+            No registrations &mdash; this event can be deleted
+          } @else {
+            {{ registrations().length }} registration(s) block deletion
+          }
+        </p>
+      </article>
+      <article class="stat-card">
+        <p class="stat-card__label">Tickets sold</p>
+        <p class="stat-card__value">{{ totalTickets() }}</p>
+        <p class="stat-card__foot">across {{ registrations().length }} registration(s)</p>
+      </article>
+      <article class="stat-card">
+        <p class="stat-card__label">Value recorded</p>
+        <p class="stat-card__value">{{ formatCurrency(totalValue()) }}</p>
+        <p class="stat-card__foot">Sum of registration totals</p>
+      </article>
+    </section>
+  }
+
+  <!-- ===================== TABLE ===================== -->
+  <section class="card mt-block">
+    <div class="card__body">
+      @if (registrations().length === 0) {
+        <div class="state">
+          <p>There are no registrations for this event yet.</p>
+          <p class="text-muted">
+            Because no one has booked, this event can be deleted from the event list.
+          </p>
+          <a class="btn btn--secondary" routerLink="/events">Back to the event list</a>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="data-table">
+            <caption class="visually-hidden">Registrations for this event</caption>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Attendee</th>
+                <th scope="col">Contact</th>
+                <th scope="col">Organisation</th>
+                <th scope="col" class="table-numeric">Tickets</th>
+                <th scope="col" class="table-numeric">Amount</th>
+                <th scope="col">Purchased</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (registration of registrations(); track registration.registrationId; let index = $index) {
+                <tr [class.row--busy]="deletingId() === registration.registrationId">
+                  <td>{{ index + 1 }}</td>
+                  <td>
+                    <strong>{{ registration.attendeeName }}</strong>
+                    @if (registration.notes) {
+                      <br /><small class="text-muted">{{ registration.notes }}</small>
+                    }
+                  </td>
+                  <td>
+                    {{ registration.email }}
+                    @if (registration.phone) {
+                      <br /><small class="text-muted">{{ registration.phone }}</small>
+                    }
+                  </td>
+                  <td>{{ registration.organisation || '—' }}</td>
+                  <td class="table-numeric">{{ registration.ticketsPurchased }}</td>
+                  <td class="table-numeric">{{ formatCurrency(registration.totalAmount) }}</td>
+                  <td>{{ formatDateTime(registration.registrationDate) }}</td>
+                  <td>
+                    <button
+                      class="btn btn--danger btn--sm"
+                      type="button"
+                      [disabled]="deletingId() === registration.registrationId"
+                      (click)="cancelRegistration(registration)"
+                    >
+                      @if (deletingId() === registration.registrationId) {
+                        Cancelling&hellip;
+                      } @else {
+                        Cancel
+                      }
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colspan="4">Totals</th>
+                <th scope="row" class="table-numeric">{{ totalTickets() }}</th>
+                <th scope="row" class="table-numeric">{{ formatCurrency(totalValue()) }}</th>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      }
+    </div>
+  </section>
+}

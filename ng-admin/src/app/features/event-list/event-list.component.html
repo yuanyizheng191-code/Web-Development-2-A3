@@ -1,0 +1,173 @@
+<!--
+  event-list.component.html - the admin event listing
+
+  Shows EVERY event regardless of status (Active, Past, Suspended, Upcoming) and
+  provides the Edit / Registrations / Delete actions required by Part 4.
+
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<div class="page-head">
+  <div>
+    <h1>All charity events</h1>
+    <p class="page-head__lead">
+      Every event in the database, whatever its status. Data source:
+      <code>GET /api/events</code>.
+    </p>
+  </div>
+  <div class="btn-row">
+    <a class="btn" routerLink="/events/new">+ New event</a>
+  </div>
+</div>
+
+<!-- Feedback from the last delete attempt -->
+@if (feedback(); as note) {
+  <div class="alert" [class.alert--success]="note.type === 'success'" [class.alert--error]="note.type === 'error'" role="alert">
+    <span class="alert__icon" aria-hidden="true">{{ note.type === 'success' ? '&#10004;' : '&#9888;' }}</span>
+    <div class="alert__body">
+      <p class="alert__title">
+        {{ note.type === 'success' ? 'Done' : 'Action not completed' }}
+      </p>
+      <p>{{ note.message }}</p>
+    </div>
+    <button class="alert__close" type="button" (click)="dismissFeedback()" aria-label="Dismiss message">&times;</button>
+  </div>
+}
+
+<!-- Filters -->
+<form class="filters card" (submit)="$event.preventDefault()">
+  <div class="card__body filters__row">
+    <div class="field">
+      <label for="search">Search</label>
+      <input
+        id="search"
+        type="search"
+        placeholder="Event name, venue, charity..."
+        [value]="searchTerm()"
+        (input)="onSearchInput($any($event.target).value)"
+      />
+    </div>
+
+    <div class="field">
+      <label for="status">Status</label>
+      <select id="status" [value]="statusFilter()" (change)="onStatusChange($any($event.target).value)">
+        <option value="">All statuses</option>
+        <option value="upcoming">Upcoming</option>
+        <option value="active">Active</option>
+        <option value="suspended">Suspended</option>
+        <option value="past">Past</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="sort">Sort</label>
+      <select id="sort" [value]="sortOrder()" (change)="onSortChange($any($event.target).value)">
+        <option value="date">Date (soonest first)</option>
+        <option value="-date">Date (latest first)</option>
+        <option value="name">Name (A&ndash;Z)</option>
+        <option value="-name">Name (Z&ndash;A)</option>
+        <option value="-price">Ticket price (high to low)</option>
+      </select>
+    </div>
+
+    <div class="filters__actions">
+      <button class="btn btn--ghost" type="button" (click)="resetFilters()">Reset</button>
+    </div>
+  </div>
+</form>
+
+<!-- Results -->
+@if (eventsResource.isLoading()) {
+  <div class="state">
+    <span class="spinner" aria-hidden="true"></span>
+    <p>Loading events&hellip;</p>
+  </div>
+} @else if (eventsResource.error()) {
+  <div class="alert alert--error" role="alert">
+    <span class="alert__icon" aria-hidden="true">&#9888;</span>
+    <div class="alert__body">
+      <p class="alert__title">The event list could not be loaded</p>
+      <p>{{ $any(eventsResource.error()).message }}</p>
+      <button class="btn btn--secondary" type="button" (click)="retry()">Try again</button>
+    </div>
+  </div>
+} @else if (count() === 0) {
+  <div class="state card">
+    <p>No events match the current filters.</p>
+    <button class="btn btn--secondary" type="button" (click)="resetFilters()">Clear filters</button>
+  </div>
+} @else {
+  <div class="list-summary">
+    <p>
+      <strong>{{ count() }}</strong> event{{ count() === 1 ? '' : 's' }}
+      &middot; {{ protectedCount() }} have registrations and are protected from deletion
+    </p>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table admin-table">
+      <caption class="visually-hidden">All charity events</caption>
+      <thead>
+        <tr>
+          <th scope="col">Event</th>
+          <th scope="col">Date &amp; venue</th>
+          <th scope="col">Category / charity</th>
+          <th scope="col">Status</th>
+          <th scope="col" class="table-numeric">Ticket</th>
+          <th scope="col" class="table-numeric">Regs</th>
+          <th scope="col" class="table-numeric">Tickets</th>
+          <th scope="col" class="table-numeric">Raised</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (event of events(); track event.eventId) {
+          <tr [class.row--busy]="deletingId() === event.eventId">
+            <td>
+              <strong>{{ event.eventName }}</strong>
+              <br /><small class="text-muted">{{ event.description }}</small>
+            </td>
+            <td>
+              {{ formatDateTime(event.eventDate) }}
+              <br /><small class="text-muted">{{ event.location }}</small>
+            </td>
+            <td>
+              {{ event.categoryName || '—' }}
+              <br /><small class="text-muted">{{ event.orgName || 'No charity' }}</small>
+            </td>
+            <td>
+              <span class="badge" [class]="statusClass(event.status)">{{ event.status }}</span>
+            </td>
+            <td class="table-numeric">{{ formatPrice(event.ticketPrice) }}</td>
+            <td class="table-numeric">{{ event.registrationCount }}</td>
+            <td class="table-numeric">{{ event.ticketsSold }}</td>
+            <td class="table-numeric">{{ formatCurrency(event.currentAmount) }}</td>
+            <td>
+              <div class="row-actions">
+                <a class="btn btn--secondary btn--sm" [routerLink]="['/events', event.eventId, 'edit']">Update</a>
+                <a class="btn btn--ghost btn--sm" [routerLink]="['/events', event.eventId, 'registrations']">
+                  Registrations ({{ event.registrationCount }})
+                </a>
+                <button
+                  class="btn btn--danger btn--sm"
+                  type="button"
+                  [disabled]="deletingId() === event.eventId"
+                  [attr.aria-label]="'Delete ' + event.eventName"
+                  (click)="deleteEvent(event)"
+                >
+                  @if (deletingId() === event.eventId) {
+                    Deleting&hellip;
+                  } @else {
+                    Delete
+                  }
+                </button>
+              </div>
+              @if (event.registrationCount > 0) {
+                <small class="row-note">Protected: {{ event.registrationCount }} registration(s)</small>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

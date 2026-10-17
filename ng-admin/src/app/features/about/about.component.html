@@ -1,0 +1,110 @@
+<!--
+  about.component.html - admin console documentation
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<div class="page-head">
+  <div>
+    <h1>About the admin console</h1>
+    <p class="page-head__lead">
+      PROG2002 Web Development II &middot; Assessment 3 &middot; Team team40 &middot;
+      Angular v22 + Node.js + Express + MySQL
+    </p>
+  </div>
+  <div class="btn-row">
+    <a class="btn" routerLink="/events/new">Create an event</a>
+  </div>
+</div>
+
+<div class="grid grid--2">
+  <article class="card">
+    <div class="card__body">
+      <h2>What this console does</h2>
+      <p>
+        This is the staff-facing half of the charity events website. It provides full
+        C.R.U.D. control over the core event data:
+      </p>
+      <ul class="feature-list">
+        <li><strong>List</strong> &mdash; every event in the database, regardless of status, with the details needed for administration.</li>
+        <li><strong>New</strong> &mdash; a validated form that inserts a charity event.</li>
+        <li><strong>Update</strong> &mdash; select an event, load its details and its associated registrations, then save the changes.</li>
+        <li><strong>Delete</strong> &mdash; remove an event, with clear feedback when the deletion is blocked because registrations exist.</li>
+        <li><strong>Navigation</strong> &mdash; the sidebar menu is present on every page.</li>
+      </ul>
+      <p class="text-muted">
+        Authentication is not required for this assessment, as stated in the brief. In a
+        production deployment the console would sit behind the university's single sign-on
+        and the API would verify a role claim on every write request.
+      </p>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="card__body">
+      <h2>Technology</h2>
+      <ul class="tech-list">
+        <li><strong>Angular v22</strong> &mdash; standalone components, signals, <code>resource()</code>, zoneless change detection, built-in <code>&#64;if</code> / <code>&#64;for</code> control flow</li>
+        <li><strong>Reactive Forms</strong> &mdash; typed forms with the same validation rules the API enforces</li>
+        <li><strong>TypeScript</strong> &mdash; one shared data contract with the API's JSON</li>
+        <li><strong>SCSS</strong> &mdash; the same design system as the public site, with an indigo admin accent</li>
+        <li><strong>Node.js + Express.js + MySQL</strong> &mdash; the REST API it drives</li>
+        <li><strong>Open-Meteo</strong> &mdash; geocoding for the venue coordinates</li>
+      </ul>
+    </div>
+  </article>
+</div>
+
+<article class="card mt-block">
+  <div class="card__body">
+    <h2>API endpoints used by this console</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th scope="col">Method</th>
+            <th scope="col">Endpoint</th>
+            <th scope="col">Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (endpoint of endpoints; track endpoint.method + endpoint.path) {
+            <tr>
+              <td><span class="method" [class.method--write]="endpoint.method !== 'GET' && endpoint.method !== 'HEAD'">{{ endpoint.method }}</span></td>
+              <td><code>{{ endpoint.path }}</code></td>
+              <td>{{ endpoint.purpose }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</article>
+
+<article class="card mt-block">
+  <div class="card__body">
+    <h2>Data integrity rules enforced</h2>
+    <ul class="rule-list">
+      @for (rule of rules; track rule) {
+        <li>{{ rule }}</li>
+      }
+    </ul>
+  </div>
+</article>
+
+<article class="card mt-block">
+  <div class="card__body">
+    <h2>Generative AI use declaration</h2>
+    <p class="declaration">
+      I acknowledge that I have used GenAI tools to complete this assessment. We used
+      ChatGPT and GitHub Copilot to brainstorm the database and API design, to review and
+      comment our code, to check grammar and clarity in the project report, and to help
+      format the documentation, within the parameters outlined in the Assessment Brief and
+      by the Unit Assessor.
+    </p>
+    <p class="text-muted">
+      Every suggestion was reviewed, tested and understood by both team members before it
+      was committed. The API behaviour is verified by an automated test suite
+      (<code>api/tests/api.test.js</code>) and the database rules were tested directly in
+      MySQL.
+    </p>
+  </div>
+</article>

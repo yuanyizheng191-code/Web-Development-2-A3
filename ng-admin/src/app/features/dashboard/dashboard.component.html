@@ -1,0 +1,157 @@
+<!--
+  dashboard.component.html
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<div class="page-head">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="page-head__lead">
+      Overview of every charity event and the registrations recorded against them.
+    </p>
+  </div>
+  <div class="btn-row">
+    <a class="btn" routerLink="/events/new">+ New event</a>
+    <a class="btn btn--secondary" routerLink="/events">Manage events</a>
+  </div>
+</div>
+
+@if (isDemoMode()) {
+  <div class="alert alert--warning" role="alert">
+    <span class="alert__icon" aria-hidden="true">&#9888;</span>
+    <div class="alert__body">
+      <p class="alert__title">The API is running on read-only demo data</p>
+      <p>
+        MySQL could not be reached, so creating, updating and deleting events is disabled.
+        Import <code>api/sql/charityevents_db.sql</code> and check the <code>DB_*</code>
+        settings in <code>.env</code> to restore full control.
+      </p>
+    </div>
+  </div>
+}
+
+@if (dashboard.isLoading()) {
+  <div class="state">
+    <span class="spinner" aria-hidden="true"></span>
+    <p>Loading dashboard&hellip;</p>
+  </div>
+} @else if (dashboard.error()) {
+  <div class="alert alert--error" role="alert">
+    <span class="alert__icon" aria-hidden="true">&#9888;</span>
+    <div class="alert__body">
+      <p class="alert__title">The dashboard could not be loaded</p>
+      <p>{{ $any(dashboard.error()).message }}</p>
+      <button class="btn btn--secondary" type="button" (click)="retry()">Try again</button>
+    </div>
+  </div>
+} @else if (summary(); as stats) {
+  <!-- ===================== SUMMARY CARDS ===================== -->
+  <section class="stat-grid">
+    <article class="stat-card">
+      <p class="stat-card__label">Total events</p>
+      <p class="stat-card__value">{{ stats.totalEvents }}</p>
+      <p class="stat-card__foot">
+        {{ stats.upcomingEvents }} upcoming &middot; {{ stats.activeEvents }} active
+      </p>
+    </article>
+
+    <article class="stat-card">
+      <p class="stat-card__label">Registrations</p>
+      <p class="stat-card__value">{{ stats.totalRegistrations }}</p>
+      <p class="stat-card__foot">{{ stats.totalTickets }} tickets sold</p>
+    </article>
+
+    <article class="stat-card">
+      <p class="stat-card__label">Revenue recorded</p>
+      <p class="stat-card__value">{{ formatCurrencyWhole(stats.totalRevenue) }}</p>
+      <p class="stat-card__foot">Sum of every registration total</p>
+    </article>
+
+    <article class="stat-card">
+      <p class="stat-card__label">Storage</p>
+      <p class="stat-card__value stat-card__value--small">{{ storageLabel() }}</p>
+      <p class="stat-card__foot">Reported by GET /api/health</p>
+    </article>
+  </section>
+
+  <!-- ===================== STATUS BREAKDOWN ===================== -->
+  <section class="card mt-block">
+    <div class="card__body">
+      <h2>Events by status</h2>
+      <div class="status-bars">
+        <div class="status-bar">
+          <span class="badge badge--upcoming">Upcoming</span>
+          <span class="status-bar__count">{{ stats.upcomingEvents }}</span>
+        </div>
+        <div class="status-bar">
+          <span class="badge badge--active">Active</span>
+          <span class="status-bar__count">{{ stats.activeEvents }}</span>
+        </div>
+        <div class="status-bar">
+          <span class="badge badge--suspended">Suspended</span>
+          <span class="status-bar__count">{{ stats.suspendedEvents }}</span>
+        </div>
+        <div class="status-bar">
+          <span class="badge badge--past">Past</span>
+          <span class="status-bar__count">{{ stats.pastEvents }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RECENT EVENTS ===================== -->
+  <section class="card mt-block">
+    <div class="card__body">
+      <div class="section__head">
+        <div>
+          <h2>Recently added events</h2>
+          <p>The five most recently created events in the database.</p>
+        </div>
+        <a class="btn btn--ghost" routerLink="/events">View all events &rarr;</a>
+      </div>
+
+      @if (recentEvents().length === 0) {
+        <div class="state">
+          <p>No events have been created yet.</p>
+          <a class="btn" routerLink="/events/new">Create the first event</a>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Event</th>
+                <th scope="col">Date</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="table-numeric">Registrations</th>
+                <th scope="col" class="table-numeric">Tickets</th>
+                <th scope="col" class="table-numeric">Raised</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (event of recentEvents(); track event.eventId) {
+                <tr>
+                  <td>
+                    <strong>{{ event.eventName }}</strong>
+                    <br /><small class="text-muted">{{ event.location }}</small>
+                  </td>
+                  <td>{{ formatDateTime(event.eventDate) }}</td>
+                  <td><span class="badge" [class]="statusClass(event.status)">{{ event.status }}</span></td>
+                  <td class="table-numeric">{{ event.registrationCount }}</td>
+                  <td class="table-numeric">{{ event.ticketsSold }}</td>
+                  <td class="table-numeric">{{ formatCurrency(event.currentAmount) }}</td>
+                  <td class="row-actions">
+                    <a class="btn btn--ghost btn--sm" [routerLink]="['/events', event.eventId, 'edit']">Edit</a>
+                    <a class="btn btn--ghost btn--sm" [routerLink]="['/events', event.eventId, 'registrations']">
+                      Registrations
+                    </a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </section>
+}

@@ -1,0 +1,421 @@
+<!--
+  event-form.component.html
+  Shared NEW EVENT / UPDATE EVENT form.
+
+  PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+-->
+<div class="page-head">
+  <div>
+    <h1>{{ isEditMode() ? 'Update charity event' : 'Create a new charity event' }}</h1>
+    <p class="page-head__lead">
+      @if (isEditMode()) {
+        Editing event #{{ id() }}. Saving calls <code>PUT /api/events/{{ id() }}</code>.
+      } @else {
+        Fill in the event details and save. This calls <code>POST /api/events</code>.
+      }
+    </p>
+  </div>
+  <div class="btn-row">
+    <a class="btn btn--secondary" routerLink="/events">Back to all events</a>
+    @if (isEditMode()) {
+      <a class="btn btn--ghost" [routerLink]="['/events', id(), 'registrations']">View registrations</a>
+    }
+  </div>
+</div>
+
+<!-- Feedback -->
+@if (feedback(); as note) {
+  <div
+    class="alert"
+    [class.alert--success]="note.type === 'success'"
+    [class.alert--error]="note.type === 'error'"
+    role="alert"
+  >
+    <span class="alert__icon" aria-hidden="true">{{ note.type === 'success' ? '&#10004;' : '&#9888;' }}</span>
+    <div class="alert__body">
+      <p class="alert__title">{{ note.type === 'success' ? 'Saved' : 'Save failed' }}</p>
+      <p>{{ note.message }}</p>
+    </div>
+    <button class="alert__close" type="button" (click)="dismissFeedback()" aria-label="Dismiss">&times;</button>
+  </div>
+}
+
+@if (validationAlert(); as message) {
+  <div class="alert alert--error" role="alert">
+    <span class="alert__icon" aria-hidden="true">&#9888;</span>
+    <div class="alert__body">
+      <p class="alert__title">Validation failed</p>
+      <p>{{ message }}</p>
+    </div>
+  </div>
+}
+
+@if (loadError(); as message) {
+  <div class="alert alert--error" role="alert">
+    <span class="alert__icon" aria-hidden="true">&#10060;</span>
+    <div class="alert__body">
+      <p class="alert__title">The event could not be loaded</p>
+      <p>{{ message }}</p>
+      <a class="btn btn--secondary" routerLink="/events">Back to the event list</a>
+    </div>
+  </div>
+}
+
+@if (loadingEvent()) {
+  <div class="state card">
+    <span class="spinner" aria-hidden="true"></span>
+    <p>Loading the event details&hellip;</p>
+  </div>
+} @else if (!loadError()) {
+  <div class="form-layout">
+    <!-- ===================== FORM ===================== -->
+    <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="card__body">
+        <h2 class="form-section">Event details</h2>
+
+        <div class="form-grid">
+          <div class="field field--full">
+            <label for="eventName">Event name <span class="required">*</span></label>
+            <input
+              id="eventName"
+              type="text"
+              formControlName="eventName"
+              placeholder="City Fun Run 2026"
+              [class.is-invalid]="showError('eventName')"
+            />
+            @if (showError('eventName')) {
+              <span class="field__error">{{ errorFor('eventName') }}</span>
+            }
+          </div>
+
+          <div class="field field--full">
+            <label for="description">Short description</label>
+            <input
+              id="description"
+              type="text"
+              formControlName="description"
+              placeholder="5km charity run"
+              [class.is-invalid]="showError('description')"
+            />
+            @if (showError('description')) {
+              <span class="field__error">{{ errorFor('description') }}</span>
+            } @else {
+              <span class="field__hint">Shown on the event cards. Maximum 255 characters.</span>
+            }
+          </div>
+
+          <div class="field field--full">
+            <label for="fullDescription">Full description</label>
+            <textarea
+              id="fullDescription"
+              rows="5"
+              formControlName="fullDescription"
+              placeholder="Everything an attendee needs to know about the event..."
+              [class.is-invalid]="showError('fullDescription')"
+            ></textarea>
+            @if (showError('fullDescription')) {
+              <span class="field__error">{{ errorFor('fullDescription') }}</span>
+            } @else {
+              <span class="field__hint">Shown on the public Event Details page.</span>
+            }
+          </div>
+        </div>
+
+        <h2 class="form-section">When and where</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="eventDate">Event date and time <span class="required">*</span></label>
+            <input
+              id="eventDate"
+              type="datetime-local"
+              formControlName="eventDate"
+              [class.is-invalid]="showError('eventDate')"
+            />
+            @if (showError('eventDate')) {
+              <span class="field__error">{{ errorFor('eventDate') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="location">Venue / location <span class="required">*</span></label>
+            <div class="input-with-button">
+              <input
+                id="location"
+                type="text"
+                formControlName="location"
+                placeholder="Sydney Olympic Park"
+                [class.is-invalid]="showError('location')"
+              />
+              <button class="btn btn--secondary" type="button" [disabled]="geocoding()" (click)="findCoordinates()">
+                @if (geocoding()) {
+                  Searching&hellip;
+                } @else {
+                  Find coordinates
+                }
+              </button>
+            </div>
+            @if (showError('location')) {
+              <span class="field__error">{{ errorFor('location') }}</span>
+            } @else {
+              <span class="field__hint">
+                Use "Find coordinates" to fill the latitude and longitude from the
+                Open-Meteo geocoder.
+              </span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="latitude">Latitude</label>
+            <input
+              id="latitude"
+              type="number"
+              step="0.000001"
+              formControlName="latitude"
+              placeholder="-33.847000"
+              [class.is-invalid]="showError('latitude')"
+            />
+            @if (showError('latitude')) {
+              <span class="field__error">{{ errorFor('latitude') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="longitude">Longitude</label>
+            <input
+              id="longitude"
+              type="number"
+              step="0.000001"
+              formControlName="longitude"
+              placeholder="151.063000"
+              [class.is-invalid]="showError('longitude')"
+            />
+            @if (showError('longitude')) {
+              <span class="field__error">{{ errorFor('longitude') }}</span>
+            }
+          </div>
+        </div>
+
+        @if (geocodeError(); as message) {
+          <div class="alert alert--warning" role="alert">
+            <span class="alert__icon" aria-hidden="true">&#128205;</span>
+            <div class="alert__body"><p>{{ message }}</p></div>
+          </div>
+        }
+
+        @if (geocodeResults().length) {
+          <div class="geocode-results">
+            <p class="geocode-results__title">Choose the correct location:</p>
+            <ul>
+              @for (result of geocodeResults(); track result.latitude + '-' + result.longitude) {
+                <li>
+                  <button class="geocode-option" type="button" (click)="applyCoordinates(result)">
+                    <strong>{{ result.name }}</strong>
+                    <span class="text-muted">
+                      {{ result.admin1 ? result.admin1 + ', ' : '' }}{{ result.country }}
+                      &middot; {{ result.latitude }}, {{ result.longitude }}
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        <h2 class="form-section">Tickets, goals and status</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label for="ticketPrice">Ticket price (AUD) <span class="required">*</span></label>
+            <input
+              id="ticketPrice"
+              type="number"
+              step="0.01"
+              min="0"
+              formControlName="ticketPrice"
+              [class.is-invalid]="showError('ticketPrice')"
+            />
+            @if (showError('ticketPrice')) {
+              <span class="field__error">{{ errorFor('ticketPrice') }}</span>
+            } @else {
+              <span class="field__hint">Enter 0 for a free event.</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="goalAmount">Fundraising goal (AUD)</label>
+            <input
+              id="goalAmount"
+              type="number"
+              step="0.01"
+              min="0"
+              formControlName="goalAmount"
+              placeholder="50000"
+              [class.is-invalid]="showError('goalAmount')"
+            />
+            @if (showError('goalAmount')) {
+              <span class="field__error">{{ errorFor('goalAmount') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="status">Status <span class="required">*</span></label>
+            <select id="status" formControlName="status" [class.is-invalid]="showError('status')">
+              <option value="upcoming">Upcoming</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended (registration blocked)</option>
+              <option value="past">Past</option>
+            </select>
+            @if (showError('status')) {
+              <span class="field__error">{{ errorFor('status') }}</span>
+            } @else {
+              <span class="field__hint">
+                Upcoming and Active accept registrations; Suspended and Past do not.
+              </span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="categoryId">Category <span class="required">*</span></label>
+            <select id="categoryId" formControlName="categoryId" [class.is-invalid]="showError('categoryId')">
+              <option [ngValue]="null">-- Choose a category --</option>
+              @for (category of categories.value() ?? []; track category.categoryId) {
+                <option [ngValue]="category.categoryId">{{ category.categoryName }}</option>
+              }
+            </select>
+            @if (showError('categoryId')) {
+              <span class="field__error">{{ errorFor('categoryId') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="orgId">Charity / organisation <span class="required">*</span></label>
+            <select id="orgId" formControlName="orgId" [class.is-invalid]="showError('orgId')">
+              <option [ngValue]="null">-- Choose a charity --</option>
+              @for (org of organisations.value() ?? []; track org.orgId) {
+                <option [ngValue]="org.orgId">{{ org.orgName }}</option>
+              }
+            </select>
+            @if (showError('orgId')) {
+              <span class="field__error">{{ errorFor('orgId') }}</span>
+            }
+          </div>
+
+          <div class="field">
+            <label for="purpose">Purpose</label>
+            <input
+              id="purpose"
+              type="text"
+              formControlName="purpose"
+              placeholder="Raise $50,000 for education"
+              [class.is-invalid]="showError('purpose')"
+            />
+            @if (showError('purpose')) {
+              <span class="field__error">{{ errorFor('purpose') }}</span>
+            }
+          </div>
+
+          <div class="field field--full">
+            <label for="imageUrl">Image path or URL</label>
+            <input
+              id="imageUrl"
+              type="text"
+              formControlName="imageUrl"
+              placeholder="images/funrun.jpg or https://..."
+              [class.is-invalid]="showError('imageUrl')"
+            />
+            @if (showError('imageUrl')) {
+              <span class="field__error">{{ errorFor('imageUrl') }}</span>
+            } @else {
+              <span class="field__hint">
+                Optional. If the file is missing the public site shows a generated
+                placeholder instead.
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn--lg" type="submit" [disabled]="saving()">
+            @if (saving()) {
+              Saving&hellip;
+            } @else if (isEditMode()) {
+              Save changes
+            } @else {
+              Save new event
+            }
+          </button>
+          <button class="btn btn--ghost" type="button" (click)="resetForm()" [disabled]="saving()">
+            {{ isEditMode() ? 'Discard changes' : 'Clear form' }}
+          </button>
+          <a class="btn btn--ghost" routerLink="/events">Cancel</a>
+        </div>
+      </div>
+    </form>
+
+    <!-- ===================== SIDE PANEL ===================== -->
+    <aside class="form-aside">
+      @if (isEditMode()) {
+        <section class="card">
+          <div class="card__body">
+            <h2 class="aside-title">Associated registrations</h2>
+            <p class="text-muted aside-note">
+              Retrieved with <code>GET /api/events/{{ id() }}</code>. An event with
+              registrations cannot be deleted.
+            </p>
+
+            @if (associatedRegistrations().length === 0) {
+              <p class="aside-empty">
+                Nobody has registered for this event yet, so it is safe to delete.
+              </p>
+            } @else {
+              <p class="aside-count">
+                <strong>{{ associatedRegistrations().length }}</strong> registration(s)
+              </p>
+              <ul class="registration-list">
+                @for (registration of associatedRegistrations(); track registration.registrationId) {
+                  <li>
+                    <span class="registration-list__name">{{ registration.attendeeName }}</span>
+                    <span class="registration-list__meta">
+                      {{ registration.ticketsPurchased }} ticket(s) &middot;
+                      {{ formatCurrency(registration.totalAmount) }}
+                    </span>
+                    <span class="registration-list__date">
+                      {{ formatDateTime(registration.registrationDate) }}
+                    </span>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </section>
+      }
+
+      <section class="card">
+        <div class="card__body">
+          <h2 class="aside-title">API calls used here</h2>
+          <ul class="api-list">
+            <li><code>GET /api/categories</code></li>
+            <li><code>GET /api/organisations</code></li>
+            @if (isEditMode()) {
+              <li><code>GET /api/events/{{ id() }}</code></li>
+              <li><code>PUT /api/events/{{ id() }}</code></li>
+            } @else {
+              <li><code>POST /api/events</code></li>
+            }
+            <li><code>GET /api/geocode?name=&hellip;</code></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__body">
+          <h2 class="aside-title">Validation</h2>
+          <p class="text-muted aside-note">
+            Required fields are checked in the browser <em>and</em> again by the API
+            (<code>api/utils/validate.js</code>). If the server rejects a value the
+            message is shown at the top of this page.
+          </p>
+        </div>
+      </section>
+    </aside>
+  </div>
+}

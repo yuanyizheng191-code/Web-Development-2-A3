@@ -1,0 +1,232 @@
+/* =============================================================================
+   event-form.component.scss - admin create/update event form
+   PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+   ============================================================================= */
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.page-head h1 {
+  margin-bottom: 0.25rem;
+}
+
+.page-head__lead {
+  margin: 0;
+  color: var(--c-muted);
+}
+
+.page-head code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-line);
+  font-size: 0.85rem;
+}
+
+/* ---- alerts --------------------------------------------------------------- */
+.alert {
+  position: relative;
+}
+
+.alert__close {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+/* ---- layout --------------------------------------------------------------- */
+.form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.form-section {
+  margin: 1.5rem 0 0.85rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--c-line);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-primary-dark);
+}
+
+.form-section:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+.input-with-button {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input-with-button input {
+  flex: 1;
+}
+
+.input-with-button .btn {
+  white-space: nowrap;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--c-line);
+}
+
+/* ---- geocode results ------------------------------------------------------ */
+.geocode-results {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-line);
+}
+
+.geocode-results__title {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--c-ink);
+}
+
+.geocode-results ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.geocode-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-line);
+  background: var(--c-surface);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.geocode-option:hover {
+  border-color: var(--c-primary);
+  background: var(--c-primary-soft);
+}
+
+/* ---- side panel ----------------------------------------------------------- */
+.form-aside {
+  display: grid;
+  gap: 1.25rem;
+  position: sticky;
+  top: calc(var(--c-header, 0px) + 1rem);
+}
+
+.aside-title {
+  margin-bottom: 0.35rem;
+  font-size: 1rem;
+}
+
+.aside-note {
+  font-size: 0.82rem;
+}
+
+.aside-note code,
+.api-list code {
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-line);
+  font-size: 0.78rem;
+  word-break: break-all;
+}
+
+.aside-count {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.aside-empty {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--c-success);
+  font-weight: 600;
+}
+
+.registration-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.registration-list li {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-line);
+  font-size: 0.82rem;
+}
+
+.registration-list__name {
+  font-weight: 700;
+  color: var(--c-ink);
+}
+
+.registration-list__meta {
+  color: var(--c-primary-dark);
+  font-weight: 600;
+}
+
+.registration-list__date {
+  color: var(--c-muted);
+  font-size: 0.76rem;
+}
+
+.api-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+
+/* ---- responsive ----------------------------------------------------------- */
+@media (max-width: 1050px) {
+  .form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .form-aside {
+    position: static;
+  }
+}
