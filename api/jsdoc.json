@@ -1,0 +1,62 @@
+{
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc", "closure"]
+  },
+  "source": {
+    "include": [
+      "server.js",
+      "app.js",
+      "event_db.js",
+      "config",
+      "db",
+      "routes",
+      "services",
+      "utils",
+      "data",
+      "README.md"
+    ],
+    "includePattern": ".+\\.js$",
+    "excludePattern": "(node_modules|public|docs|tests)"
+  },
+  "plugins": ["plugins/markdown"],
+  "opts": {
+    "destination": "docs",
+    "recurse": true,
+    "readme": "README.md",
+    "template": "node_modules/docdash",
+    "encoding": "utf8"
+  },
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": false,
+    "default": {
+      "outputSourceFiles": true,
+      "includeDate": false
+    }
+  },
+  "markdown": {
+    "hardwrap": false,
+    "idInHeadings": true
+  },
+  "docdash": {
+    "static": false,
+    "sort": true,
+    "search": true,
+    "collapse": true,
+    "wrap": true,
+    "typedefs": true,
+    "navLevel": 2,
+    "meta": {
+      "title": "PROG2002 A3 - Charity Events API",
+      "description": "Automatically generated API documentation for team40's Assessment 3 submission."
+    },
+    "menu": {
+      "PROG2002 A3 on GitHub": {
+        "href": "https://github.com/",
+        "target": "_blank",
+        "class": "menu-item"
+      }
+    }
+  }
+}

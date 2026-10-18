@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Configuration is written directly in config/env.js and event_db.js.
+# There is NO .env file in this project.
+#
+# Those two files contain a real database password, so be careful when sharing
+# the project publicly. Uncomment the next two lines to keep them out of Git
+# (then use the commented DB_CONFIG example below when re-creating them):
+# config/env.js
+# event_db.js
+#
+#   const DB_CONFIG = {
+#     host: 'localhost', port: 3306,
+#     user: 'root', password: 'your-password',
+#     database: 'charityevents_db',
+#   };
+
+# Logs
+*.log
+npm-debug.log*
+
+# Angular build output copied in for cPanel hosting
+public/client/
+public/admin/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
