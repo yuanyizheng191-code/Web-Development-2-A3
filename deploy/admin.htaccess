@@ -1,0 +1,47 @@
+# =============================================================================
+# Apache configuration for the ADMIN website
+# PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+#
+# Upload this file to  public_html/admin/.htaccess  next to the admin build's
+# index.html.
+#
+# The admin application is served from the /admin sub-path, so <base href> in its
+# index.html must be "/admin/" (the Angular build is configured with
+#   ng build --base-href /admin/
+# ) and every rewrite below is relative to that sub-path - hence RewriteBase
+# /admin/ and the relative target "index.html".
+# =============================================================================
+
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /admin/
+
+  # The admin console calls the same API, which lives one level up at /api.
+  RewriteRule ^api/ - [L]
+
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Everything else is an Angular admin route (/admin/events/3/edit and so on).
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css          "access plus 1 year"
+  ExpiresByType text/javascript   "access plus 1 year"
+  ExpiresByType text/html         "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "index\.html$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate"
+  </FilesMatch>
+  Header set X-Content-Type-Options "nosniff"
+
+  # The admin console must never be indexed by a search engine.
+  Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>

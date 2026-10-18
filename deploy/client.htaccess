@@ -1,0 +1,77 @@
+# =============================================================================
+# Apache configuration for the PUBLIC client website
+# PROG2002 A3 - team40 - Yizheng Yuan (24833044), Mu Li (224832355)
+#
+# Upload this file to  public_html/.htaccess  on SCU cPanel, next to index.html.
+#
+# WHY IT IS NEEDED
+# Angular is a Single Page Application: the server only really has one page,
+# index.html, and the Angular router decides what to show. If a user opens a
+# deep link such as /events/3 or /register?eventId=2, Apache would look for a
+# file called "3" inside a folder called "events" and return 404. The rewrite
+# rules below send any request that is not a real file or folder to index.html,
+# which lets Angular handle the route in the browser.
+# =============================================================================
+
+# ---- Default document -------------------------------------------------------
+DirectoryIndex index.html
+
+# ---- Enable the rewrite engine ---------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Do not rewrite API calls - the Node.js application answers those.
+  RewriteRule ^api/ - [L]
+
+  # A request for an existing real file (main.js, styles.css, favicon.ico ...)
+  # is served directly.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Everything else is an Angular route - hand it to index.html.
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# ---- Never serve the admin console from the public client folder ------------
+# (the admin build lives in public_html/admin, which has its own .htaccess)
+
+# ---- Correct MIME types for modern bundles ---------------------------------
+<IfModule mod_mime.c>
+  AddType text/javascript .js .mjs
+  AddType text/css .css
+  AddType application/json .json
+  AddType image/svg+xml .svg
+  AddType font/woff2 .woff2
+</IfModule>
+
+# ---- Caching ---------------------------------------------------------------
+# Angular writes a content hash into every file name, so a file can safely be
+# cached for a year: if its content changes, its name changes too.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css                "access plus 1 year"
+  ExpiresByType text/javascript         "access plus 1 year"
+  ExpiresByType image/svg+xml           "access plus 1 year"
+  ExpiresByType image/png               "access plus 1 year"
+  ExpiresByType image/jpeg              "access plus 1 year"
+  ExpiresByType font/woff2              "access plus 1 year"
+  # index.html must never be cached, otherwise users keep an old version of the
+  # application after a new deployment.
+  ExpiresByType text/html               "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "index\.html$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate"
+  </FilesMatch>
+  # A small set of sensible security headers.
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ---- Compression -----------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
