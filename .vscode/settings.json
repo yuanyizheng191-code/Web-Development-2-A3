@@ -1,0 +1,30 @@
+{
+  // ===========================================================================
+  // VS Code 工作区设置 - PROG2002 A3
+  // ===========================================================================
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "editor.tabSize": 2,
+  "editor.rulers": [100],
+
+  // 隐藏不需要看的文件夹，让左边文件树干净一点
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.angular": true,
+    "**/__pycache__": true
+  },
+  // 搜索时也跳过这些（但它们还在磁盘上，不影响运行）
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.angular": true,
+    "**/dist": true,
+    "**/docs": true,
+    "**/public/client": true,
+    "**/public/admin": true
+  },
+
+  // 推荐装的插件（打开项目时 VS Code 会提示）
+  "recommendations": []
+}

@@ -1,0 +1,77 @@
+{
+  // ===========================================================================
+  // VS Code 启动配置 - PROG2002 A3
+  // ===========================================================================
+  // 用法：在 VS Code 里按 F5，或者点左侧「运行和调试」图标，选一个配置点绿色三角。
+  //
+  // 注意：node 路径写的是 D:\Node24 里的 Node v24，
+  //       因为 Angular v22 要求 Node 22.22.3 以上。
+  //       如果你电脑上 node 已经够新，把 runtimeExecutable 那一行删掉即可。
+  // ===========================================================================
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // 【最常用】启动 API + 两个网站（全部在 http://localhost:3000）
+      "name": "启动网站 (API + 客户端 + 管理端)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "D:\\Node24\\node-v24.22.0-win-x64\\node.exe",
+      "program": "${workspaceFolder}/api/server.js",
+      "cwd": "${workspaceFolder}/api",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "serverReadyAction": {
+        "pattern": "API listening on (http://localhost:[0-9]+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      }
+    },
+    {
+      // 和上面一样，但不自动打开浏览器
+      "name": "启动网站 (不自动开浏览器)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "D:\\Node24\\node-v24.22.0-win-x64\\node.exe",
+      "program": "${workspaceFolder}/api/server.js",
+      "cwd": "${workspaceFolder}/api",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      // 96 项 API 自动测试（需要网站已启动）
+      "name": "运行 API 测试 (96 项)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "D:\\Node24\\node-v24.22.0-win-x64\\node.exe",
+      "program": "${workspaceFolder}/api/tests/api.test.js",
+      "cwd": "${workspaceFolder}/api",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      // 57 项浏览器自动测试（需要网站已启动 + Chrome）
+      "name": "运行浏览器测试 (57 项)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "D:\\Node24\\node-v24.22.0-win-x64\\node.exe",
+      "program": "${workspaceFolder}/tools/ui-smoke-test.js",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      // 修改源码后重新构建两个网站（要用 Angular 的 ng 命令，所以走 npm）
+      "name": "重新构建网站 (production)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "D:\\Node24\\node-v24.22.0-win-x64\\node.exe",
+      "program": "${workspaceFolder}/ng-client/node_modules/@angular/cli/bin/ng.js",
+      "args": ["build", "--configuration", "production"],
+      "cwd": "${workspaceFolder}/ng-client",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}
